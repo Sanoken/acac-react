@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import keycloak from "./keycloak";
-import logo from './logo.svg';
+import Header from "./components/header";
+import ThemeContextProvider from "./context/ThemeContext";
+import Users from "./pages/Users";
 import './App.css';
-
 
 function App() {
   const [userInfo, setUserInfo] = useState(null);
@@ -15,25 +17,15 @@ function App() {
   }, []);
 
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-      <div>
-        <button onClick={() => keycloak.logout()}>Logout</button>
-      </div>
-    </div>
+
+    <ThemeContextProvider>
+      <Router> { /* Add the Router component here */ }
+        <Header />
+        <Routes>
+          <Route path="/users" element={<Users />} /> 
+        </Routes>
+      </Router>
+    </ThemeContextProvider>
   );
 }
 
