@@ -1,9 +1,45 @@
 version: '3.8'
 
 services:
-  react-app:
-    build: .
+  postgres:
+    image: postgres:15
+    container_name: acac-postgres
+    environment:
+      POSTGRES_USER: acac
+      POSTGRES_PASSWORD: acac
+      POSTGRES_DB: acac_database
     ports:
-      - "3000:80"
-    container_name: acac-container
+      - "5432:5432"
     restart: always
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  api:
+    build: ./backend
+    ports:
+      - "5000:5000"
+    container_name: acac-api
+    restart: always
+    depends_on:
+      - postgres
+    environment:
+      DATABASE_URL: "host=postgres user=acac password=acac dbname=acac_database sslmode=disable"
+    volumes:
+      - ./backend:/usr/src/app
+    command: ["node", "server.js"]
+  react-app:
+    build: ./frontend
+    ports:
+      - "3000:3000"
+    container_name: acac-web
+    environment:
+      REACT_APP_API_URL: "http://localhost:5000"
+    volumes:
+      - ./frontend//usr/src/app
+      - /usr/src/app/node_modules
+    restart: always
+    stdin_open: true
+    tty: true
+
+volumes:
+  postgres_data:
