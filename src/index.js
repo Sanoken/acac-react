@@ -10,7 +10,7 @@ import keycloak from './keycloak';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
 
-keycloak.init({ onLoad: "login-required" }).then(authenticated => {
+keycloak.init({ onLoad: "login-required", pkceMethod: "S256" }).then(authenticated => {
   if (!authenticated) {
       console.log("User not authenticated");
   }

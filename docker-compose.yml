@@ -1,9 +1,9 @@
 version: '3.8'
 
 services:
-  react-app:
+  acac:
     build: .
     ports:
       - "3000:80"
-    container_name: acac-container
+    container_name: acac-server
     restart: always
