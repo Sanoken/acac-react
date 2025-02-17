@@ -1,7 +1,10 @@
 version: '3.8'
 
+name: acac
+
 services:
-  frontend:
+  acac-server:
+    container_name: acac-server
     build: .
     ports:
       - "3000:3000"
@@ -10,7 +13,8 @@ services:
     environment:
       - REACT_APP_API_URL=http://192.168.0.115:5000
 
-  backend:
+  acac-api:
+    container_name: acac-api
     build: ./backend
     ports:
       - "5000:5000"
@@ -24,6 +28,7 @@ services:
       - DB_NAME=acac_db
 
   db:
+    container_name: acac-db
     image: postgres:latest
     restart: always
     environment:
