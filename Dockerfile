@@ -2,7 +2,7 @@
 FROM node:18-alpine as build
 
 # Set the working directory in the container
-WORKDIR /usr/src/app
+WORKDIR /app
 
 # Copy package.json and package-lock.json
 COPY package*.json ./
@@ -20,10 +20,10 @@ RUN npm run build
 FROM nginx:stable-alpine
 
 # Copy built React files to the Nginx server directory
-COPY --from=build /usr/src/app/build /usr/share/nginx/html
+COPY --from=build /app/build /usr/share/nginx/html
 
 # Expose the port Nginx will run on
-EXPOSE 3000
+EXPOSE 80
 
 # Start Nginx
 CMD ["nginx", "-g", "daemon off;"]
