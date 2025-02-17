@@ -1,49 +1,9 @@
 version: '3.8'
 
-name: acac
-
 services:
-  acac-server:
-    container_name: acac-server
+  react-app:
     build: .
     ports:
-      - "3000:3000"
-    depends_on:
-      - backend
-    environment:
-      - REACT_APP_API_URL=http://192.168.0.115:5000
-
-  acac-api:
-    container_name: acac-api
-    build: ./backend
-    ports:
-      - "5000:5000"
-    depends_on:
-      db:
-        condition: service_healthy
-    environment:
-      - DB_HOST=db
-      - DB_USER=postgres
-      - DB_PASSWORD=postgres
-      - DB_NAME=acac_db
-
-  db:
-    container_name: acac-db
-    image: postgres:latest
+      - "3000:80"
+    container_name: acac-container
     restart: always
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: acac_db
-    ports:
-      - "5432:5432"
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-
-volumes:
-  pgdata:
