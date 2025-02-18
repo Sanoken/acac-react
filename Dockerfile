@@ -22,8 +22,16 @@ FROM nginx:stable-alpine
 # Copy built React files to the Nginx server directory
 COPY --from=build /app/build /usr/share/nginx/html
 
+
+# Copy SSL certificates
+COPY certs/nginx.crt /etc/nginx/nginx.crt
+COPY certs/nginx.key /etc/nginx/nginx.key
+
+# Copy custom Nginx configuration
+COPY nginx.conf /etc/nginx/nginx.conf
+
 # Expose the port Nginx will run on
-EXPOSE 80
+EXPOSE 3443 80
 
 # Start Nginx
 CMD ["nginx", "-g", "daemon off;"]

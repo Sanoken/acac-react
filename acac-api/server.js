@@ -1,3 +1,5 @@
+const fs = require("fs");
+const https = require("https");
 const express = require("express");
 const { Sequelize, DataTypes } = require("sequelize");
 const cors = require("cors");
@@ -31,6 +33,11 @@ const User = sequelize.define("User", {
 sequelize.sync().then(() => console.log("Database synced"));
 
 const app = express();
+const port = 3443
+const privateKey = fs.readFileSync("/app/certs/acac-api.key", "utf8");
+const certificate = fs.readFileSync("/app/certs/acac-api.crt", "utf8");
+const credentials = { key: privateKey, cert: certificate };
+
 app.use(cors());
 app.use(express.json());
 
@@ -85,6 +92,10 @@ app.delete("/users/:id", async (req, res) => {
 });
 
 // Start Server
-app.listen(3001, () => {
-  console.log("Server running on port 3001");
+//app.listen(3001, () => {
+//  console.log("Server running on port 3001");
+//});
+
+const httpsServer = https.createServer(credentials, app).listen(port, () => {
+  console.log(`Server running on port ${port}`);
 });
