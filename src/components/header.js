@@ -51,6 +51,12 @@ const Header = () => {
                     </ListItemIcon>
                   User Management
                   </MenuItem>
+                  <MenuItem component={Link} to="/waitinglist" OnClick={handleMenuClose}>
+                    <ListItemIcon>
+                      <People fontSize="small" />
+                    </ListItemIcon>
+                  User Management
+                  </MenuItem>
                   <MenuItem onClick={handleLogout}>
                     <ListItemIcon>
                       <Logout fontSize="small" />
