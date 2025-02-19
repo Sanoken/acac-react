@@ -92,10 +92,10 @@ app.delete("/users/:id", async (req, res) => {
 });
 
 // Start Server
-//app.listen(3001, () => {
-//  console.log("Server running on port 3001");
-//});
+// app.listen(3001, () => {
+//   console.log("Server running on port 3001");
+// }); 
 
 const httpsServer = https.createServer(credentials, app).listen(port, () => {
-  console.log(`Server running on port ${port}`);
+   console.log(`Server running on port ${port}`);
 });

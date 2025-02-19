@@ -38,6 +38,7 @@ services:
         condition: service_healthy
     ports:
       - "3443:3443"
+    restart: always
     environment:
       DB_HOST: db
       DB_USER: postgres
