@@ -2,8 +2,10 @@ import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import keycloak from "./keycloak";
 import Header from "./components/header";
+import Footer from "./components/footer";
 import ThemeContextProvider from "./context/ThemeContext";
 import Users from "./pages/Users";
+import WaitingList from "./pages/WaitingList";
 import './App.css';
 
 function App() {
@@ -27,7 +29,9 @@ function App() {
           </div>
         <Routes>
           <Route path="/users" element={<Users />} /> 
+          <Route path="/waitinglist" element={<WaitingList />} />
         </Routes>
+        <Footer />
       </Router>
     </ThemeContextProvider>
   );
