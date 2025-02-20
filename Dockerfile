@@ -31,7 +31,7 @@ COPY certs/nginx.key /etc/nginx/nginx.key
 COPY nginx.conf /etc/nginx/nginx.conf
 
 # Expose the port Nginx will run on
-EXPOSE 3443 80
+EXPOSE 80
 
 # Start Nginx
 CMD ["nginx", "-g", "daemon off;"]
