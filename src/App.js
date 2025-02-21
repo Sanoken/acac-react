@@ -13,9 +13,15 @@ function App() {
   
   useEffect(() => {
     if (keycloak.authenticated) {
-        keycloak.loadUserInfo().then(info => setUserInfo(info));
-       // console.log(userInfo.authenticated);
-    }
+      keycloak.loadUserInfo()
+          .then(info => {
+              setUserInfo(info);
+              console.log('User Info:', info);  // Log the loaded user info
+          })
+          .catch(err => {
+              console.error('Failed to load user info:', err);
+          });
+  }
   }, []);
 
   return (
