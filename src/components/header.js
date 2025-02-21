@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { Link } from "react-router-dom";
 import { AppBar, Toolbar, Typography, IconButton, Menu, MenuItem, ListItemIcon } from "@mui/material";
-import { Menu as MenuIcon, DarkMode as DarkModeIcon, LightMode as LightModeIcon, AccountCircle, People, Logout } from "@mui/icons-material";
+import { Menu as MenuIcon, DarkMode as DarkModeIcon, LightMode as LightModeIcon, AccountCircle, People, Logout, ListAlt } from "@mui/icons-material";
 import { ThemeContext } from "../context/ThemeContext";
 import keycloak from "../keycloak";
 
@@ -45,17 +45,17 @@ const Header = () => {
                   open={Boolean(anchorEl)}
                   onClose={handleMenuClose}
               >
-                  <MenuItem component={Link} to="/users" OnClick={handleMenuClose}>
+                  <MenuItem component={Link} to="/users" onClick={handleMenuClose}>
                     <ListItemIcon>
                       <People fontSize="small" />
                     </ListItemIcon>
                   User Management
                   </MenuItem>
-                  <MenuItem component={Link} to="/waitinglist" OnClick={handleMenuClose}>
+                  <MenuItem component={Link} to="/waitinglist" onClick={handleMenuClose}>
                     <ListItemIcon>
-                      <People fontSize="small" />
+                      <ListAlt fontSize="small" />
                     </ListItemIcon>
-                  User Management
+                  Waiting List
                   </MenuItem>
                   <MenuItem onClick={handleLogout}>
                     <ListItemIcon>
