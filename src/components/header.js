@@ -26,9 +26,6 @@ const Header = () => {
     return (
       <AppBar position="static" sx={{ backgroundColor: darkMode ? "#212121" : "#1976d2" }}>
           <Toolbar>
-              <IconButton edge="start" color="inherit" aria-label="menu">
-                  <MenuIcon />
-              </IconButton>
               <Typography variant="h6" sx={{ flexGrow: 1 }}>
                   {darkMode ? "A Clear's A Clear" : "A Clear's A Clear"}
               </Typography>
