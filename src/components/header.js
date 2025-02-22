@@ -1,26 +1,35 @@
-import React, { useContext } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { AppBar, Toolbar, Typography, IconButton, Menu, MenuItem, ListItemIcon } from "@mui/material";
-import { Menu as MenuIcon, DarkMode as DarkModeIcon, LightMode as LightModeIcon, AccountCircle, People, Logout, ListAlt } from "@mui/icons-material";
+import { AppBar, Toolbar, Typography, IconButton, Menu, MenuItem, ListItemIcon, Avatar } from "@mui/material";
+import { Menu as MenuIcon, DarkMode as DarkModeIcon, LightMode as LightModeIcon, People, Logout, ListAlt } from "@mui/icons-material";
 import { ThemeContext } from "../context/ThemeContext";
 import keycloak from "../keycloak";
 
 const Header = () => {
     const { darkMode, toggleTheme } = useContext(ThemeContext);
-    const [anchorEl, setAnchorEl] = React.useState(null);
+    const [anchorEl, setAnchorEl] = useState(null);
+    const [currentUser, setCurrentUser] = useState(null);
+
+    // Retrieve the matched user record from localStorage
+    useEffect(() => {
+        const storedUser = localStorage.getItem("currentUser");
+        if (storedUser) {
+            setCurrentUser(JSON.parse(storedUser));
+        }
+    }, []);
 
     const handleMenuOpen = (event) => {
         setAnchorEl(event.currentTarget);
     };
 
     const handleMenuClose = () => {
-      setAnchorEl(null);
+        setAnchorEl(null);
     };
     
     const handleLogout = () => {
-      handleMenuClose();
-      keycloak.logout()
-      console.log("User logged out");
+        handleMenuClose();
+        keycloak.logout()
+        console.log("User logged out");
     };
 
     return (
@@ -33,9 +42,13 @@ const Header = () => {
                   {darkMode ? <LightModeIcon /> : <DarkModeIcon />}
               </IconButton>
 
-              {/* User Account Icon with Menu */}
+              {/* User Avatar with Menu */}
               <IconButton color="inherit" onClick={handleMenuOpen}>
-                  <AccountCircle />
+                  {currentUser && currentUser.lodestoneimage ? (
+                      <Avatar src={currentUser.lodestoneimage} alt={currentUser.name} />
+                  ) : (
+                      <Avatar>{currentUser ? currentUser.name[0] : "?"}</Avatar>
+                  )}
               </IconButton>
               <Menu
                   anchorEl={anchorEl}

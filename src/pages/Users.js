@@ -1,18 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { 
-    Container, Typography, Button, Grid, Card, CardContent, Avatar, IconButton, 
-    Dialog, DialogActions, DialogContent, DialogTitle, TextField, CardActions, 
-    ToggleButton
+import {
+    Container, Typography, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper,
+    Avatar, IconButton, Dialog, DialogActions, DialogContent, DialogTitle, TextField, ToggleButton, TableSortLabel, Grid
 } from "@mui/material";
 import { Edit as EditIcon, Delete as DeleteIcon, Add as AddIcon } from "@mui/icons-material";
 import { v4 as uuidv4 } from "uuid";
-import { getUsers, createUser, updateUser, deleteUser } from "../services/userService"; // Import API functions
+import { getUsers, createUser, updateUser, deleteUser } from "../services/userService"; 
 
 const Users = () => {
     const [users, setUsers] = useState([]);
     const [open, setOpen] = useState(false);
     const [editingUser, setEditingUser] = useState(null);
     const [form, setForm] = useState({ name: "", discord: "", lodestoneid: "", lodestoneimage: "", raidmember: false, ninemember: false });
+    const [order, setOrder] = useState('asc');
 
     useEffect(() => {
         fetchUsers();
@@ -21,19 +21,18 @@ const Users = () => {
     const fetchUsers = async () => {
         const data = await getUsers();
         setUsers(data);
-        console.log(data);
     };
 
     const handleOpen = (user = null) => {
         setEditingUser(user);
-        setForm(user || { name: "", discord: "", lodestoneid: "", lodestoneimage: "" , raidmember: false, ninemember: false });
+        setForm(user || { name: "", discord: "", lodestoneid: "", lodestoneimage: "", raidmember: false, ninemember: false });
         setOpen(true);
     };
 
     const handleClose = () => {
         setOpen(false);
         setEditingUser(null);
-        setForm({ name: "", discord: "", lodestoneid: "", lodestoneimage: "", raidmember: false, ninemember: false }); 
+        setForm({ name: "", discord: "", lodestoneid: "", lodestoneimage: "", raidmember: false, ninemember: false });
     };
 
     const handleChange = (e) => {
@@ -42,21 +41,14 @@ const Users = () => {
 
     const handleSave = async () => {
         if (editingUser) {
-            // Update existing user
             await updateUser(editingUser.id, form);
         } else {
-            // **✅ Call `createUser` API function to add a new user**
-            const newUser = await createUser({
-                id: uuidv4(), // Generate a unique ID
-                ...form
-            });
-
+            const newUser = await createUser({ id: uuidv4(), ...form });
             if (newUser) {
-                setUsers([...users, newUser]); // Update state with the new user
+                setUsers([...users, newUser]);
             }
         }
-
-        fetchUsers(); // Refresh the user list
+        fetchUsers();
         handleClose();
     };
 
@@ -65,58 +57,73 @@ const Users = () => {
         fetchUsers();
     };
 
+    const handleSort = () => {
+        const isAsc = order === 'asc';
+        setOrder(isAsc ? 'desc' : 'asc');
+        const sortedUsers = [...users].sort((a, b) => {
+            return isAsc 
+                ? a.name.localeCompare(b.name) 
+                : b.name.localeCompare(a.name);
+        });
+        setUsers(sortedUsers);
+    };
+
     return (
         <Container>
             <Typography variant="h4" sx={{ mt: 4, mb: 2 }}>
                 User Management
             </Typography>
 
-            {/* Add User Button */}
             <Button variant="contained" startIcon={<AddIcon />} onClick={() => handleOpen()} sx={{ mb: 2 }}>
                 Add User
             </Button>
 
-            {/* User Cards Grid */}
-            <Grid container spacing={3}>
-                {users.map(user => (
-                    <Grid item xs={12} sm={6} md={4} key={user.id}>
-                        <Card sx={{ display: "flex", alignItems: "center", padding: 2 }}>
-                            <Avatar 
-                                sx={{ bgcolor: "#1976d2", width: 56, height: 56, marginRight: 2 }} 
-                                src={user.lodestoneimage}
-                                alt={user.name}  
-                            />
-                            <CardContent sx={{ flexGrow: 1 }}>
-                                <Typography variant="h6" gutterBottom>
-                                    {user.name}
-                                </Typography>
-                                <Typography variant="body2" color="textSecondary" gutterBottom>
-                                    Discord: {user.discord}
-                                </Typography>
-                                <Typography variant="body2" color="textSecondary" gutterBottom>
-                                    Lodestone ID: {user.lodestoneid}
-                                </Typography>
-                                <Typography variant="body2" color="textSecondary" gutterBottom>
-                                    Raid Member: {user.raidmember ? "Yes" : "No"}
-                                </Typography>
-                                <Typography variant="body2" color="textSecondary">
-                                    Nine Member: {user.ninemember ? "Yes" : "No"}
-                                </Typography>
-                            </CardContent>
-                            <CardActions>
-                                <IconButton color="primary" onClick={() => handleOpen(user)}>
-                                    <EditIcon />
-                                </IconButton>
-                                <IconButton color="error" onClick={() => handleDelete(user.id)}>
-                                    <DeleteIcon />
-                                </IconButton>
-                            </CardActions>
-                        </Card>
-                    </Grid>
-                ))}
-            </Grid>
+            <TableContainer component={Paper}>
+                <Table>
+                    <TableHead>
+                        <TableRow>
+                            <TableCell>Avatar</TableCell>
+                            <TableCell sortDirection={order}>
+                                <TableSortLabel
+                                    active={true}
+                                    direction={order}
+                                    onClick={handleSort}
+                                >
+                                    Name
+                                </TableSortLabel>
+                            </TableCell>
+                            <TableCell>Discord</TableCell>
+                            <TableCell>Lodestone ID</TableCell>
+                            <TableCell>Raid Member</TableCell>
+                            <TableCell>Nine Member</TableCell>
+                            <TableCell>Actions</TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {users.map(user => (
+                            <TableRow key={user.id}>
+                                <TableCell>
+                                    <Avatar src={user.lodestoneimage} alt={user.name} />
+                                </TableCell>
+                                <TableCell>{user.name}</TableCell>
+                                <TableCell>{user.discord}</TableCell>
+                                <TableCell>{user.lodestoneid}</TableCell>
+                                <TableCell>{user.raidmember ? "Yes" : "No"}</TableCell>
+                                <TableCell>{user.ninemember ? "Yes" : "No"}</TableCell>
+                                <TableCell>
+                                    <IconButton color="primary" onClick={() => handleOpen(user)}>
+                                        <EditIcon />
+                                    </IconButton>
+                                    <IconButton color="error" onClick={() => handleDelete(user.id)}>
+                                        <DeleteIcon />
+                                    </IconButton>
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </TableContainer>
 
-            {/* Add/Edit User Dialog */}
             <Dialog open={open} onClose={handleClose}>
                 <DialogTitle>{editingUser ? "Edit User" : "Add User"}</DialogTitle>
                 <DialogContent>
@@ -192,12 +199,8 @@ const Users = () => {
                     </Grid>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleClose} color="secondary">
-                        Cancel
-                    </Button>
-                    <Button onClick={handleSave} color="primary">
-                        {editingUser ? "Update" : "Save"}
-                    </Button>
+                    <Button onClick={handleClose} color="secondary">Cancel</Button>
+                    <Button onClick={handleSave} color="primary">{editingUser ? "Update" : "Save"}</Button>
                 </DialogActions>
             </Dialog>
         </Container>
