@@ -7,32 +7,53 @@ import ThemeContextProvider from "./context/ThemeContext";
 import Users from "./pages/Users";
 import WaitingList from "./pages/WaitingList";
 import './App.css';
+import { getUsers } from "./services/userService";  // Import the getUsers function
 
 function App() {
-  const [userInfo, setUserInfo] = useState(null);
-  
+  const [userInfo, setUserInfo] = useState(() => {
+    // Retrieve user info from localStorage on initial load
+    const storedUserInfo = localStorage.getItem("userInfo");
+    return storedUserInfo ? JSON.parse(storedUserInfo) : null;
+  });
+
   useEffect(() => {
     if (keycloak.authenticated) {
       keycloak.loadUserInfo()
-          .then(info => {
-              setUserInfo(info);
-              console.log('User Info:', info);  // Log the loaded user info
-          })
-          .catch(err => {
-              console.error('Failed to load user info:', err);
-          });
-  }
+        .then(info => {
+          setUserInfo(info);
+          // Store user info in localStorage
+          localStorage.setItem("userInfo", JSON.stringify(info));
+          console.log('User Info:', info);  // Log the loaded user info
+
+          // Fetch full list of users from API
+          getUsers()
+            .then(users => {
+              // Match Keycloak's preferred_username with discord value
+              const matchedUser = users.find(user => user.discord === info.preferred_username);
+              if (matchedUser) {
+                // Store the matched user record in localStorage
+                localStorage.setItem("currentUser", JSON.stringify(matchedUser));
+                console.log("Matched User:", matchedUser);
+              }
+            })
+            .catch(err => {
+              console.error('Failed to load users from API:', err);
+            });
+        })
+        .catch(err => {
+          console.error('Failed to load user info:', err);
+        });
+    }
   }, []);
 
   return (
-
     <ThemeContextProvider>
-      <Router> { /* Add the Router component here */ }
+      <Router> 
         <Header />
         <br /> <br />
         <div align="center">
-            <img src="https://lh3.googleusercontent.com/pw/AP1GczMIWq8USOQE7vmzLYSjRbwa73T06MWVxDQygFeGNS4jhIDtyWxG4ds9VEY58jWHyaMfha7vwRz8RAlyLUebMrQsozG1cMioB8IE-Uoom7eV3JpZ-RkDkDIb5nscRSMNdUvWnhFti4Gs2zbM4eP_UOpEJw=w1278-h535-s-no-gm" />
-          </div>
+          <img src="https://lh3.googleusercontent.com/pw/AP1GczMIWq8USOQE7vmzLYSjRbwa73T06MWVxDQygFeGNS4jhIDtyWxG4ds9VEY58jWHyaMfha7vwRz8RAlyLUebMrQsozG1cMioB8IE-Uoom7eV3JpZ-RkDkDIb5nscRSMNdUvWnhFti4Gs2zbM4eP_UOpEJw=w1278-h535-s-no-gm" />
+        </div>
         <Routes>
           <Route path="/users" element={<Users />} /> 
           <Route path="/waitinglist" element={<WaitingList />} />
