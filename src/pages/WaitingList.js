@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Tabs, Tab, Chip, Avatar, Grid, Container } from '@mui/material';
 import { getUsers } from '../services/userService';
-
 const sections = [
     'Accessory Upgrade',
     'Equipment Upgrade',
