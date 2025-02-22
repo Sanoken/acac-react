@@ -18,12 +18,18 @@ function App() {
 
   useEffect(() => {
     if (keycloak.authenticated) {
+      // Cler localStorage on authentication to remove stale data
+      localStorage.removeItem("userInfo");
+      localStorage.removeItem("currentUser");
+      
       keycloak.loadUserInfo()
         .then(info => {
           setUserInfo(info);
           // Store user info in localStorage
           localStorage.setItem("userInfo", JSON.stringify(info));
-          console.log('User Info:', info);  // Log the loaded user info
+
+          // Fetch Keycloak Groups
+         
 
           // Fetch full list of users from API
           getUsers()
@@ -33,7 +39,7 @@ function App() {
               if (matchedUser) {
                 // Store the matched user record in localStorage
                 localStorage.setItem("currentUser", JSON.stringify(matchedUser));
-                console.log("Matched User:", matchedUser);
+               // console.log("Matched User:", matchedUser);
               }
             })
             .catch(err => {

@@ -8,14 +8,60 @@ import keycloak from "../keycloak";
 const Header = () => {
     const { darkMode, toggleTheme } = useContext(ThemeContext);
     const [anchorEl, setAnchorEl] = useState(null);
-    const [currentUser, setCurrentUser] = useState(null);
+    const [currentUser, setCurrentUser] = useState(() => {
+        // Retrieve from localStorage on initial load
+        const storedUser = localStorage.getItem("currentUser");
+        return storedUser ? JSON.parse(storedUser) : null;
+    });
 
-    // Retrieve the matched user record from localStorage
-    useEffect(() => {
+    // Function to update the currentUser state from localStorage
+    const updateCurrentUser = () => {
         const storedUser = localStorage.getItem("currentUser");
         if (storedUser) {
             setCurrentUser(JSON.parse(storedUser));
         }
+    };
+
+    const [isAdmin, setIsAdmin] = useState(false);
+
+    // Monitor localStorage changes for userInfo within the same tab
+    useEffect(() => {
+        const checkUserInfo = () => {
+            const storedUserInfo = localStorage.getItem("userInfo");
+            if (storedUserInfo) {
+                const parsedInfo = JSON.parse(storedUserInfo);
+                try {
+                    
+                if(parsedInfo.groups.includes('nine-admin')) {
+                  setIsAdmin(true);  
+                  //console.log("User is an admin");
+                } else { 
+                   setIsAdmin(false); 
+                   //console.log("User is not an admin");
+                }
+                } catch (error) { 
+                    setIsAdmin(false);
+                    console.log("Error checking user group: ", error);
+                 }
+
+                // If the discord value matches, update currentUser
+                const storedUser = localStorage.getItem("currentUser");
+                if (storedUser) {
+                    const parsedUser = JSON.parse(storedUser);
+                    if (parsedUser.discord === parsedInfo.preferred_username) {
+                        setCurrentUser(parsedUser);
+                    }
+                }
+            }
+        };
+
+        // Check for changes every second
+        const intervalId = setInterval(checkUserInfo, 1000);
+
+        // Clean up the interval on component unmount
+        return () => {
+            clearInterval(intervalId);
+        };
     }, []);
 
     const handleMenuOpen = (event) => {
@@ -28,8 +74,11 @@ const Header = () => {
     
     const handleLogout = () => {
         handleMenuClose();
-        keycloak.logout()
-        console.log("User logged out");
+        // Clear all relevant data from localStorage
+        localStorage.removeItem("userInfo");
+        localStorage.removeItem("currentUser");
+        keycloak.logout();
+        console.log("User logged out and localStorage cleared");
     };
 
     return (
@@ -55,12 +104,14 @@ const Header = () => {
                   open={Boolean(anchorEl)}
                   onClose={handleMenuClose}
               >
+                    {isAdmin && ( 
                   <MenuItem component={Link} to="/users" onClick={handleMenuClose}>
                     <ListItemIcon>
                       <People fontSize="small" />
                     </ListItemIcon>
                   User Management
-                  </MenuItem>
+                  </MenuItem> 
+                )}
                   <MenuItem component={Link} to="/waitinglist" onClick={handleMenuClose}>
                     <ListItemIcon>
                       <ListAlt fontSize="small" />

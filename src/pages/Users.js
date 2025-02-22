@@ -6,8 +6,13 @@ import {
 import { Edit as EditIcon, Delete as DeleteIcon, Add as AddIcon } from "@mui/icons-material";
 import { v4 as uuidv4 } from "uuid";
 import { getUsers, createUser, updateUser, deleteUser } from "../services/userService"; 
+import { useNavigate } from "react-router-dom";
 
 const Users = () => {
+
+    const navigate = useNavigate();
+    const [isAuthorized, setIsAuthorized] = useState(false);   
+    
     const [users, setUsers] = useState([]);
     const [open, setOpen] = useState(false);
     const [editingUser, setEditingUser] = useState(null);
@@ -15,8 +20,25 @@ const Users = () => {
     const [order, setOrder] = useState('asc');
 
     useEffect(() => {
+        const storedUserInfo = localStorage.getItem('userInfo');
+        if (storedUserInfo) {
+            const parsedInfo = JSON.parse(storedUserInfo);
+            // Check if user is in nine-admin group
+            try
+            {
+                if (parsedInfo.groups.includes('nine-admin')) {
+                    setIsAuthorized(true);
+                } else {
+                    navigate('/');
+                }
+            } catch (error){return navigate('/');}
+            
+         } else {
+            navigate('/');
+         }
+
         fetchUsers();
-    }, []);
+    }, [navigate]);
 
     const fetchUsers = async () => {
         const data = await getUsers();
