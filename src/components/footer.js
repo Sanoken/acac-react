@@ -12,8 +12,10 @@ const Footer = () => {
             color: darkMode ? '#ffffff' : '#000000',
             padding: '10px',
             textAlign: 'right',
-            position: 'sticky',
+            position: 'fixed',
             bottom: 0,  // Sticks to the bottom of the viewport
+            left: 0,    // Anchors to the left side
+            right: 0,   // Anchors to the right side
             zIndex: 10  // Ensures it's above other components
         }}>
             <Typography variant="body2" color="textSecondary">
