@@ -1,7 +1,7 @@
 import React, { useContext, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { AppBar, Toolbar, Typography, IconButton, Menu, MenuItem, ListItemIcon, Avatar } from "@mui/material";
-import { Menu as MenuIcon, DarkMode as DarkModeIcon, LightMode as LightModeIcon, People, Logout, ListAlt } from "@mui/icons-material";
+import { Menu as MenuIcon, DarkMode as DarkModeIcon, LightMode as LightModeIcon, People, Logout, PlaylistAddCheck, SportsMartialArts } from "@mui/icons-material";
 import { ThemeContext } from "../context/ThemeContext";
 import keycloak from "../keycloak";
 
@@ -112,9 +112,15 @@ const Header = () => {
                   User Management
                   </MenuItem> 
                 )}
+                  <MenuItem component={Link} to="/raid-content" onClick={handleMenuClose}>
+                    <ListItemIcon>
+                      <SportsMartialArts fontSize="small" />
+                    </ListItemIcon>
+                    Raid Content
+                  </MenuItem>
                   <MenuItem component={Link} to="/waitinglist" onClick={handleMenuClose}>
                     <ListItemIcon>
-                      <ListAlt fontSize="small" />
+                      <PlaylistAddCheck fontSize="small" />
                     </ListItemIcon>
                   Waiting List
                   </MenuItem>
