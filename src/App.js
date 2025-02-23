@@ -6,6 +6,8 @@ import Footer from "./components/footer";
 import ThemeContextProvider from "./context/ThemeContext";
 import Users from "./pages/Users";
 import WaitingList from "./pages/WaitingList";
+import RaidContent from "./pages/RaidContent";
+
 import './App.css';
 import { getUsers } from "./services/userService";  // Import the getUsers function
 
@@ -63,6 +65,7 @@ function App() {
         <Routes>
           <Route path="/users" element={<Users />} /> 
           <Route path="/waitinglist" element={<WaitingList />} />
+          <Route path="/raid-content" element={<RaidContent />} />
         </Routes>
         <Footer />
       </Router>
