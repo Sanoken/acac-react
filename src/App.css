@@ -36,3 +36,7 @@
     transform: rotate(360deg);
   }
 }
+/* Add padding to the main container */
+main {
+  padding-bottom: 60px; /* Same as the footer's height */
+}

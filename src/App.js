@@ -58,7 +58,7 @@ function App() {
     <ThemeContextProvider>
       <Router> 
         <Header />
-        <br /> <br />
+        <main>
         <div align="center">
           <img src="https://lh3.googleusercontent.com/pw/AP1GczMIWq8USOQE7vmzLYSjRbwa73T06MWVxDQygFeGNS4jhIDtyWxG4ds9VEY58jWHyaMfha7vwRz8RAlyLUebMrQsozG1cMioB8IE-Uoom7eV3JpZ-RkDkDIb5nscRSMNdUvWnhFti4Gs2zbM4eP_UOpEJw=w1278-h535-s-no-gm" />
         </div>
@@ -67,6 +67,7 @@ function App() {
           <Route path="/waitinglist" element={<WaitingList />} />
           <Route path="/raid-content" element={<RaidContent />} />
         </Routes>
+        </main>
         <Footer />
       </Router>
     </ThemeContextProvider>
