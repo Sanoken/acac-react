@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Tabs, Tab, Chip, Avatar, Grid, Container } from '@mui/material';
+import { Box, Tabs, Tab, Chip, Avatar, Grid2, Container } from '@mui/material';
 import { getUsers } from '../services/userService';
 import { getRaidfloors } from '../services/raidfloorService';
 
@@ -54,13 +54,13 @@ const WaitingList = () => {
             </Tabs>
             {raidfloors.map((floor, index) => (
                 <div key={index} hidden={activeTab !== index}>
-                    <Grid container spacing={3} sx={{ marginTop: '20px' }}>
+                    <Grid2 container spacing={3} sx={{ marginTop: '20px' }}>
                         {sections.map(section => (
-                            <Grid item xs={12} key={section}>
+                            <Grid2 item xs={12} key={section}>
                                 <h2>{section}</h2>
-                                <Grid container spacing={1}>
+                                <Grid2 container spacing={1}>
                                     {users.map(user => (
-                                        <Grid item key={user.id}>
+                                        <Grid2 item key={user.id}>
                                             <Chip
                                                 avatar={<Avatar alt={user.name} src={user.lodestoneimage} />}
                                                 label={user.name}
@@ -68,12 +68,12 @@ const WaitingList = () => {
                                                 color={selectedUsers[section]?.[user.id] ? 'primary' : 'default'}
                                                 onClick={() => toggleUserSelection(section, user.id)}
                                             />
-                                        </Grid>
+                                        </Grid2>
                                     ))}
-                                </Grid>
-                            </Grid>
+                                </Grid2>
+                            </Grid2>
                         ))}
-                    </Grid>
+                    </Grid2>
                 </div>
             ))}
         </Container>
