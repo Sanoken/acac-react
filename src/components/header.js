@@ -7,7 +7,6 @@ import keycloak from "../keycloak";
 import { parse } from "postcss";
 
 const Header = () => {
-    const [lodestoneid, setlodestoneid] = useState(null);
     const { darkMode, toggleTheme } = useContext(ThemeContext);
     const [anchorEl, setAnchorEl] = useState(null);
     const [currentUser, setCurrentUser] = useState(() => {
@@ -52,7 +51,6 @@ const Header = () => {
                     const parsedUser = JSON.parse(storedUser);
                     if (parsedUser.discord === parsedInfo.preferred_username) {
                         setCurrentUser(parsedUser);
-                        setlodestoneid(parsedUser.lodestoneid);
                     }
                 }
             }
@@ -84,11 +82,6 @@ const Header = () => {
         console.log("User logged out and localStorage cleared");
     };
 
-    const handleAvatarClick = () => {
-      //console.log("lodestoneid: ", lodestoneid);
-      window.location.href = "https://na.finalfantasyxiv.com/lodestone/character/" + lodestoneid +"/";
-    }
-
     return (
       <AppBar position="static" sx={{ backgroundColor: darkMode ? "#212121" : "#1976d2" }}>
           <Toolbar>
@@ -103,7 +96,7 @@ const Header = () => {
               </IconButton>
 
               {/* User Avatar with Menu */}
-              <IconButton color="inherit" onClick={handleAvatarClick}>
+              <IconButton color="inherit" onClick={handleMenuOpen}>
                   {currentUser && currentUser.lodestoneimage ? (
                       <Avatar src={currentUser.lodestoneimage} alt={currentUser.name} />
                   ) : (
