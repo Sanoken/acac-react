@@ -4,13 +4,15 @@ import { AppBar, Toolbar, Typography, IconButton, Menu, MenuItem, ListItemIcon, 
 import { Menu as MenuIcon, DarkMode as DarkModeIcon, LightMode as LightModeIcon, People, Logout, PlaylistAddCheck, SportsMartialArts } from "@mui/icons-material";
 import { ThemeContext } from "../context/ThemeContext";
 import keycloak from "../keycloak";
+import { parse } from "postcss";
 
 const Header = () => {
+    const [lodestoneid, setlodestoneid] = useState(null);
     const { darkMode, toggleTheme } = useContext(ThemeContext);
     const [anchorEl, setAnchorEl] = useState(null);
     const [currentUser, setCurrentUser] = useState(() => {
         // Retrieve from localStorage on initial load
-        const storedUser = localStorage.getItem("currentUser");
+        const storedUser = localStorage.getItem("currentUser");       
         return storedUser ? JSON.parse(storedUser) : null;
     });
 
@@ -22,7 +24,7 @@ const Header = () => {
         }
     };
 
-    const [isAdmin, setIsAdmin] = useState(false);
+    const [isAdmin, setIsAdmin] = useState(false);    
 
     // Monitor localStorage changes for userInfo within the same tab
     useEffect(() => {
@@ -50,6 +52,7 @@ const Header = () => {
                     const parsedUser = JSON.parse(storedUser);
                     if (parsedUser.discord === parsedInfo.preferred_username) {
                         setCurrentUser(parsedUser);
+                        setlodestoneid(parsedUser.lodestoneid);
                     }
                 }
             }
@@ -81,9 +84,17 @@ const Header = () => {
         console.log("User logged out and localStorage cleared");
     };
 
+    const handleAvatarClick = () => {
+      //console.log("lodestoneid: ", lodestoneid);
+      window.location.href = "https://na.finalfantasyxiv.com/lodestone/character/" + lodestoneid +"/";
+    }
+
     return (
       <AppBar position="static" sx={{ backgroundColor: darkMode ? "#212121" : "#1976d2" }}>
           <Toolbar>
+              <IconButton edge="start" color="inherit" aria-label="menu" onClick={handleMenuOpen}>
+                  <Avatar src="https://lds-img.finalfantasyxiv.com/h/5/4_6qlZUYui4tW5ktSgjd-uYbxk.png" />
+              </IconButton>
               <Typography variant="h6" sx={{ flexGrow: 1 }}>
                   {darkMode ? "A Clear's A Clear" : "A Clear's A Clear"}
               </Typography>
@@ -92,7 +103,7 @@ const Header = () => {
               </IconButton>
 
               {/* User Avatar with Menu */}
-              <IconButton color="inherit" onClick={handleMenuOpen}>
+              <IconButton color="inherit" onClick={handleAvatarClick}>
                   {currentUser && currentUser.lodestoneimage ? (
                       <Avatar src={currentUser.lodestoneimage} alt={currentUser.name} />
                   ) : (
