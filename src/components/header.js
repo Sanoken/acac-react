@@ -112,12 +112,14 @@ const Header = () => {
                   User Management
                   </MenuItem> 
                 )}
+                {isAdmin &&(
                   <MenuItem component={Link} to="/raid-content" onClick={handleMenuClose}>
                     <ListItemIcon>
                       <SportsMartialArts fontSize="small" />
                     </ListItemIcon>
                     Raid Content
                   </MenuItem>
+                )}
                   <MenuItem component={Link} to="/waitinglist" onClick={handleMenuClose}>
                     <ListItemIcon>
                       <PlaylistAddCheck fontSize="small" />
