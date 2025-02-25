@@ -17,6 +17,8 @@ import { getUsers } from '../services/userService';
 import { getRaidfloors } from '../services/raidfloorService';
 import { getWaitinglists, createWaitinglist, deleteWaitinglist } from '../services/waitinglistService';
 import { getRaiditems } from '../services/raiditemService';
+import { createItemdrop } from '../services/itemdropService';
+
 
 const WaitingList = () => {
     const [activeTab, setActiveTab] = useState(0);
@@ -30,7 +32,7 @@ const WaitingList = () => {
         getUsers().then(data => setUsers(data));
         getRaidfloors().then(data => setRaidfloors(data.sort((a, b) => a.order - b.order)));
         getWaitinglists().then(data => setWaitinglist(data));
-        getRaiditems().then(data => setRaiditems(data));
+        getRaiditems().then(data => setRaiditems(data.filter(item => item.haslist)));
     }, []);
 
     useEffect(() => {
@@ -49,21 +51,28 @@ const WaitingList = () => {
         createWaitinglist({ userid, raiditemid })
     }
     const handleDeleteWaitingList = (userid, raiditem) => {
-        deleteWaitinglist(raiditem,userid);
+        deleteWaitinglist(raiditem, userid);
     }
     const handleTabChange = (event, newValue) => {
         setActiveTab(newValue);
     };
 
+    const handleCreateItemdrop = (itemData) => {
+        createItemdrop(itemData);
+    };
+
     const handleChipClick = (itemId, userId) => {
         const isEnabled = selectedChips[itemId] && selectedChips[itemId][userId];
-    
+
         if (isEnabled) {
-            // If enabled, call handleDeleteWaitingList
+            // If enabled, remove waiting list record
             handleDeleteWaitingList(userId, itemId);
+           //        
+            
         } else {
-            // If disabled, call handleCreateWaitingList
+            // If disabled, create waiting list record
             handleCreateWaitingList(userId, itemId);
+            handleCreateItemdrop({ itemid: itemId, userid: userId });   
         }
     
         // Toggle the state of the chip
@@ -74,6 +83,7 @@ const WaitingList = () => {
                 [userId]: !isEnabled
             }
         }));
+
     };
 
     const isUserInWaitingList = (itemId, userId) => {

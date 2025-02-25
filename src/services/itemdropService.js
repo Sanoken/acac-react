@@ -1,29 +1,29 @@
-const API_URL = process.env.REACT_APP_ACAC_API_URL + "/raiditems";
+const API_URL = process.env.REACT_APP_ACAC_API_URL + "/itemdrops";
 
-// Fetch all raid items
-export const getRaiditems = async () => {
+// Fetch all item drops
+export const getItemDrops = async () => {
   try {
     const response = await fetch(API_URL);
     return await response.json();
   } catch (error) {
-    console.error("Error fetching raid items:", error);
+    console.error("Error fetching item drops:", error);
     return [];
   }
 };
 
-// Fetch a single raid item by ID
-export const getRaiditem = async (id) => {
+// Fetch a single item drop by ID
+export const getItemDrop = async (id) => {
   try {
     const response = await fetch(`${API_URL}/${id}`);
     return await response.json();
   } catch (error) {
-    console.error("Error fetching raid item:", error);
+    console.error("Error fetching item drop:", error);
     return null;
   }
 };
 
-// Create a new raid item
-export const createRaiditem = async (itemData) => {
+// Create a new item drop
+export const createItemdrop = async (itemData) => {
   try {
     const response = await fetch(API_URL, {
       method: "POST",
@@ -34,12 +34,12 @@ export const createRaiditem = async (itemData) => {
     });
     return await response.json();
   } catch (error) {
-    console.error("Error creating raid item:", error);
+    console.error("Error creating item drop:", error);
     return null;
   }
 };
 
-// Update an existing raid item
+// Update an existing item drop
 export const updateRaiditem = async (id, itemData) => {
   try {
     const response = await fetch(`${API_URL}/${id}`, {
@@ -51,12 +51,12 @@ export const updateRaiditem = async (id, itemData) => {
     });
     return await response.json();
   } catch (error) {
-    console.error("Error updating raid item:", error);
+    console.error("Error updating item drop:", error);
     return null;
   }
 };
 
-// Delete a raid item
+// Delete a item drop
 export const deleteRaiditem = async (id) => {
   try {
     await fetch(`${API_URL}/${id}`, {
@@ -64,7 +64,7 @@ export const deleteRaiditem = async (id) => {
     });
     return true;
   } catch (error) {
-    console.error("Error deleting raid item:", error);
+    console.error("Error deleting item drop:", error);
     return false;
   }
 };
