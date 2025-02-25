@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Box, Tabs, Tab, Chip, Avatar, Grid2, Container } from '@mui/material';
 import { getUsers } from '../services/userService';
 import { getRaidfloors } from '../services/raidfloorService';
+import { getWaitinglists } from '../services/waitinglistService';
 
 const sections = [
     'Accessory Upgrade',
@@ -15,10 +16,13 @@ const WaitingList = () => {
     const [users, setUsers] = useState([]);
     const [raidfloors, setRaidfloors] = useState([]);
     const [selectedUsers, setSelectedUsers] = useState({});
+    const [waitinglists, setWaitinglist] = useState([]);
 
     useEffect(() => {
         getUsers().then(data => setUsers(data));
         getRaidfloors().then(data => setRaidfloors(data.sort((a, b) => a.order - b.order)));
+        getWaitinglists().then(data => { setWaitinglist(data); });
+        console.log(waitinglists);
     }, []);
 
     const handleTabChange = (_, newValue) => {
