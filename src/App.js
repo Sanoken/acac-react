@@ -61,8 +61,16 @@ function App() {
         <br />
         <br />
         <main>
-        <div align="center">
-          <img src="https://lh3.googleusercontent.com/pw/AP1GczMIWq8USOQE7vmzLYSjRbwa73T06MWVxDQygFeGNS4jhIDtyWxG4ds9VEY58jWHyaMfha7vwRz8RAlyLUebMrQsozG1cMioB8IE-Uoom7eV3JpZ-RkDkDIb5nscRSMNdUvWnhFti4Gs2zbM4eP_UOpEJw=w1278-h535-s-no-gm" />
+        <div style={{  width: "100%", height: "auto", overflow: "hidden" }}>
+          <img alt="A Clear's A Clear Banner" 
+            src={`${process.env.PUBLIC_URL}/images/banner.png`} 
+            style={{
+              width: "100%",
+              height: "auto",
+              objectFit: "cover",
+              maxHeight: "400px"
+            }}
+          />
         </div>
         <Routes>
           <Route path="/users" element={<Users />} /> 
