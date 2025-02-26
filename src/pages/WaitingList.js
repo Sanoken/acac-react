@@ -11,13 +11,21 @@ import {
     ListItemAvatar, 
     ListItemText, 
     Divider, 
-    Chip 
+    Chip,
+    Table, 
+    TableBody, 
+    TableCell, 
+    TableContainer, 
+    TableHead, 
+    TableRow, 
+    Paper
 } from '@mui/material';
 import { getUsers } from '../services/userService';
 import { getRaidfloors } from '../services/raidfloorService';
 import { getWaitinglists, createWaitinglist, deleteWaitinglist } from '../services/waitinglistService';
 import { getRaiditems } from '../services/raiditemService';
-import { createItemdrop } from '../services/itemdropService';
+import { createItemdrop, getItemDrops } from '../services/itemdropService';
+
 
 
 const WaitingList = () => {
@@ -27,13 +35,15 @@ const WaitingList = () => {
     const [waitinglists, setWaitinglist] = useState([]);
     const [raiditems, setRaiditems] = useState([]);
     const [selectedChips, setSelectedChips] = useState({});
+    const [itemdrops, setItemdrops] = useState([]);
+    const [updateTrigger, setUpdateTrigger] = useState(false);
 
     useEffect(() => {
         getUsers().then(data => setUsers(data));
         getRaidfloors().then(data => setRaidfloors(data.sort((a, b) => a.order - b.order)));
         getWaitinglists().then(data => setWaitinglist(data));
         getRaiditems().then(data => setRaiditems(data.filter(item => item.haslist)));
-    }, []);
+    }, [updateTrigger, activeTab, raidfloors]);
 
     useEffect(() => {
         // Initialize selectedChips state for each item
@@ -46,6 +56,14 @@ const WaitingList = () => {
         });
         setSelectedChips(initialSelected);
     }, [raiditems, users]);
+
+    useEffect(() => {
+        getItemDrops().then(data => {
+            const filteredDrops = data.filter(drop => drop.Raiditem.floorid === raidfloors[activeTab]?.id);
+            //console.log(data.Raiditem[0].floorid)
+            setItemdrops(filteredDrops);
+        });
+    }, [activeTab, raidfloors]);
 
     const handleCreateWaitingList = (userid, raiditemid) => {
         createWaitinglist({ userid, raiditemid })
@@ -83,7 +101,7 @@ const WaitingList = () => {
                 [userId]: !isEnabled
             }
         }));
-
+        setUpdateTrigger(prev => !prev);
     };
 
     const isUserInWaitingList = (itemId, userId) => {
@@ -91,6 +109,8 @@ const WaitingList = () => {
             waitinglist.raiditemid === itemId && waitinglist.userid === userId
         );
     };
+
+    //const filteredItemdrops = itemdrops.filter(drop => drop.Raiditem.floorid === raidfloors.id);
 
     return (
         <Container>
@@ -119,6 +139,8 @@ const WaitingList = () => {
                     <Typography variant="h6" sx={{ marginBottom: 2 }}>
                         {raidfloor.name} Waiting List
                     </Typography>
+                    <Typography variant="body2" sx={{ marginBottom: 2 }} dangerouslySetInnerHTML={{ __html: raidfloor.description }} />
+                    <Divider sx={{ marginBottom: 2 }} />
                     <List>
                         {raiditems
                             .filter(item => item.floorid === raidfloor.id)
@@ -161,6 +183,39 @@ const WaitingList = () => {
                     </List>
                 </Box>
             ))}
+
+            <TableContainer component={Paper} style={{ marginTop: 20 }}>
+                <Table>
+                    <TableHead>
+                        <TableRow>
+                            <TableCell>Item</TableCell>
+                            <TableCell>Raider</TableCell>
+                            <TableCell>Date Received</TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {itemdrops.map((drop, index) => (
+                            <TableRow key={index}>
+                                <TableCell>
+                                <Chip 
+                                    avatar={<Avatar src={drop.Raiditem.raidimage} alt={drop.Raiditem.name} />}
+                                    label={drop.Raiditem.name}                                    
+                                    sx={{ marginBottom: 1 }}
+                                />
+                                </TableCell>
+                                <TableCell>
+                                <Chip 
+                                    avatar={<Avatar src={users.find(user => user.id === drop.userid)?.lodestoneimage} alt={users.find(user => user.id === drop.userid)?.name} />}
+                                    label={users.find(user => user.id === drop.userid)?.name}                                 
+                                    sx={{ marginBottom: 1 }}
+                                />
+                                </TableCell>
+                                <TableCell>{new Date(drop.createdAt).toLocaleDateString()}</TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </TableContainer>
         </Container>
     );
 };
