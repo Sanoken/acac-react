@@ -40,7 +40,7 @@ export const createItemdrop = async (itemData) => {
 };
 
 // Update an existing item drop
-export const updateRaiditem = async (id, itemData) => {
+export const updateItemdrop = async (id, itemData) => {
   try {
     const response = await fetch(`${API_URL}/${id}`, {
       method: "PUT",
@@ -57,7 +57,7 @@ export const updateRaiditem = async (id, itemData) => {
 };
 
 // Delete a item drop
-export const deleteRaiditem = async (id) => {
+export const deleteItemdrop = async (id) => {
   try {
     await fetch(`${API_URL}/${id}`, {
       method: "DELETE",

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import {
     Container, Typography, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper,
-    Avatar, IconButton, Dialog, DialogActions, DialogContent, DialogTitle, TextField, ToggleButton, TableSortLabel, Grid
+    Avatar, IconButton, Dialog, DialogActions, DialogContent, DialogTitle, TextField, ToggleButton, TableSortLabel, Grid2
 } from "@mui/material";
 import { Edit as EditIcon, Delete as DeleteIcon, Add as AddIcon } from "@mui/icons-material";
 import { v4 as uuidv4 } from "uuid";
@@ -11,8 +11,6 @@ import { useNavigate } from "react-router-dom";
 const Users = () => {
 
     const navigate = useNavigate();
-    const [isAuthorized, setIsAuthorized] = useState(false);   
-    
     const [users, setUsers] = useState([]);
     const [open, setOpen] = useState(false);
     const [editingUser, setEditingUser] = useState(null);
@@ -26,9 +24,7 @@ const Users = () => {
             // Check if user is in nine-admin group
             try
             {
-                if (parsedInfo.groups.includes('nine-admin')) {
-                    setIsAuthorized(true);
-                } else {
+                if (!parsedInfo.groups.includes('nine-admin')) {
                     navigate('/');
                 }
             } catch (error){return navigate('/');}
@@ -149,15 +145,15 @@ const Users = () => {
             <Dialog open={open} onClose={handleClose}>
                 <DialogTitle>{editingUser ? "Edit User" : "Add User"}</DialogTitle>
                 <DialogContent>
-                    <Grid container spacing={2}>
-                        <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
+                    <Grid2 container spacing={2}>
+                        <Grid2 item xs={12} sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
                             <Avatar 
                                 sx={{ width: 100, height: 100 }} 
                                 src={form.lodestoneimage} 
                                 alt={form.name} 
                             />
-                        </Grid>
-                        <Grid item xs={12}>
+                        </Grid2>
+                        <Grid2 item xs={12}>
                             <TextField
                                 autoFocus
                                 margin="dense"
@@ -167,8 +163,8 @@ const Users = () => {
                                 value={form.name}
                                 onChange={handleChange}
                             />
-                        </Grid>
-                        <Grid item xs={12}>
+                        </Grid2>
+                        <Grid2 item xs={12}>
                             <TextField
                                 margin="dense"
                                 label="Discord"
@@ -177,8 +173,8 @@ const Users = () => {
                                 value={form.discord}
                                 onChange={handleChange}
                             />
-                        </Grid>
-                        <Grid item xs={12}>
+                        </Grid2>
+                        <Grid2 item xs={12}>
                             <TextField
                                 margin="dense"
                                 label="Lodestone ID"
@@ -187,8 +183,8 @@ const Users = () => {
                                 value={form.lodestoneid}
                                 onChange={handleChange}
                             />
-                        </Grid>
-                        <Grid item xs={12}>
+                        </Grid2>
+                        <Grid2 item xs={12}>
                             <TextField
                                 margin="dense"
                                 label="Lodestone Image URL"
@@ -197,8 +193,8 @@ const Users = () => {
                                 value={form.lodestoneimage}
                                 onChange={handleChange}
                             />
-                        </Grid>
-                        <Grid item xs={6}>
+                        </Grid2>
+                        <Grid2 item xs={6}>
                             <ToggleButton
                                 value="check"
                                 selected={form.raidmember}
@@ -207,8 +203,8 @@ const Users = () => {
                             >
                                 Raid Member
                             </ToggleButton>
-                        </Grid>
-                        <Grid item xs={6}>
+                        </Grid2>
+                        <Grid2 item xs={6}>
                             <ToggleButton
                                 value="check"
                                 selected={form.ninemember}
@@ -217,8 +213,8 @@ const Users = () => {
                             >
                                 Nine Member
                             </ToggleButton>
-                        </Grid>
-                    </Grid>
+                        </Grid2>
+                    </Grid2>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleClose} color="secondary">Cancel</Button>

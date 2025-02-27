@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, use } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from "react-router-dom";
 import { 
     getRaidfloors, 
@@ -29,7 +29,6 @@ import { Edit, Delete } from '@mui/icons-material';
 
     useEffect(() => {
         const storedUserInfo = localStorage.getItem('userInfo');
-        //console.log(storedUserInfo);
         if (storedUserInfo) {
             const parsedInfo = JSON.parse(storedUserInfo);
             // Check if user is in nine-admin group
@@ -37,16 +36,13 @@ import { Edit, Delete } from '@mui/icons-material';
             {
                 if (parsedInfo.groups.includes('nine-admin')) {
                     setIsAuthorized(true);
-                    console.log('Authorized');
                 } else {
-                    console.log('Not Authorized')
                     navigate('/');
                 }
             } catch (error){return navigate('/');}
             
          } else {
             navigate('/');
-            //console.log('Not Authorized');
          }
     }, [navigate]);
 
@@ -134,7 +130,6 @@ import { Edit, Delete } from '@mui/icons-material';
     const fetchRaidfloors = useCallback(async () => {
         setLoading(true);
         const panels = await getRaidfloors();
-       // console.log(panels);
         setContentPanels(panels.sort((a, b) => a.order - b.order));
         setLoading(false);
     }, []);
@@ -142,7 +137,6 @@ import { Edit, Delete } from '@mui/icons-material';
     // Fetch Raid Items
     const fetchRaiditems = useCallback(async () => {
         const items = await getRaiditems();
-        //console.log(items);
         setRaiditems(items.sort((a, b) => a.order - b.order));
     }, []);
 

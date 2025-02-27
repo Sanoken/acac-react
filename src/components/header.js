@@ -1,10 +1,9 @@
 import React, { useContext, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { AppBar, Toolbar, Typography, IconButton, Menu, MenuItem, ListItemIcon, Avatar } from "@mui/material";
-import { Menu as MenuIcon, DarkMode as DarkModeIcon, LightMode as LightModeIcon, People, Logout, PlaylistAddCheck, SportsMartialArts } from "@mui/icons-material";
+import { DarkMode as DarkModeIcon, LightMode as LightModeIcon, People, Logout, PlaylistAddCheck, SportsMartialArts } from "@mui/icons-material";
 import { ThemeContext } from "../context/ThemeContext";
 import keycloak from "../keycloak";
-import { parse } from "postcss";
 
 const Header = () => {
     const { darkMode, toggleTheme } = useContext(ThemeContext);
@@ -16,12 +15,12 @@ const Header = () => {
     });
 
     // Function to update the currentUser state from localStorage
-    const updateCurrentUser = () => {
-        const storedUser = localStorage.getItem("currentUser");
-        if (storedUser) {
-            setCurrentUser(JSON.parse(storedUser));
-        }
-    };
+    // const updateCurrentUser = () => {
+    //     const storedUser = localStorage.getItem("currentUser");
+    //     if (storedUser) {
+    //         setCurrentUser(JSON.parse(storedUser));
+    //     }
+    // };
 
     const [isAdmin, setIsAdmin] = useState(false);    
 
@@ -35,14 +34,11 @@ const Header = () => {
                     
                 if(parsedInfo.groups.includes('nine-admin')) {
                   setIsAdmin(true);  
-                  //console.log("User is an admin");
                 } else { 
                    setIsAdmin(false); 
-                   //console.log("User is not an admin");
                 }
                 } catch (error) { 
                     setIsAdmin(false);
-                    console.log("Error checking user group: ", error);
                  }
 
                 // If the discord value matches, update currentUser
