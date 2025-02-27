@@ -5,6 +5,7 @@ import {
     Tab, 
     Avatar, 
     Container, 
+    IconButton,
     Typography, 
     List, 
     ListItem, 
@@ -20,11 +21,12 @@ import {
     TableRow, 
     Paper
 } from '@mui/material';
+import { Delete as DeleteIcon } from "@mui/icons-material";
 import { getUsers } from '../services/userService';
 import { getRaidfloors } from '../services/raidfloorService';
 import { getWaitinglists, createWaitinglist, deleteWaitinglist } from '../services/waitinglistService';
 import { getRaiditems } from '../services/raiditemService';
-import { createItemdrop, getItemDrops } from '../services/itemdropService';
+import { createItemdrop, getItemDrops, deleteItemdrop } from '../services/itemdropService';
 
 
 
@@ -37,12 +39,14 @@ const WaitingList = () => {
     const [selectedChips, setSelectedChips] = useState({});
     const [itemdrops, setItemdrops] = useState([]);
     const [updateTrigger, setUpdateTrigger] = useState(false);
+    const [isAdmin, setIsAdmin] = useState(false);
 
     useEffect(() => {
-        getUsers().then(data => setUsers(data));
-        getRaidfloors().then(data => setRaidfloors(data.sort((a, b) => a.order - b.order)));
-        getWaitinglists().then(data => setWaitinglist(data));
-        getRaiditems().then(data => setRaiditems(data.filter(item => item.haslist)));
+        fetchUsers();
+        fetchRaidItems();
+        fetchRaidfloors();
+        fetchWaitinglist();
+        fetchAdminStatus();
     }, [updateTrigger, activeTab, raidfloors]);
 
     useEffect(() => {
@@ -60,11 +64,44 @@ const WaitingList = () => {
     useEffect(() => {
         getItemDrops().then(data => {
             const filteredDrops = data.filter(drop => drop.Raiditem.floorid === raidfloors[activeTab]?.id);
-            //console.log(data.Raiditem[0].floorid)
-            setItemdrops(filteredDrops);
+            setItemdrops(filteredDrops.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)));
         });
     }, [activeTab, raidfloors]);
 
+    const fetchAdminStatus = async () => {
+        const storedUserInfo = localStorage.getItem('userInfo');
+        if (storedUserInfo) {
+            const parsedInfo = JSON.parse(storedUserInfo);
+            // Check if user is in nine-admin group
+            try
+            {
+                if (!parsedInfo.groups.includes('nine-admin')) {
+                    setIsAdmin(false);
+                } else {
+                    setIsAdmin(true);
+                }
+            } catch (error){return setIsAdmin(false);}
+        } else {
+            setIsAdmin(false);
+        }
+    }
+    const fetchRaidItems = async () => {
+            const data = await getRaiditems();
+            setRaiditems(data.filter(item => item.haslist));
+    };
+
+    const fetchUsers = async () => {
+        const data = await getUsers();  
+        setUsers(data);
+    }    
+    const fetchRaidfloors = async () => {
+        const data = await getRaidfloors();
+        setRaidfloors(data.sort((a, b) => a.order - b.order));
+    };
+    const fetchWaitinglist = async () => {
+            const data = await getWaitinglists();
+            setWaitinglist(data);
+    }
     const handleCreateWaitingList = (userid, raiditemid) => {
         createWaitinglist({ userid, raiditemid })
     }
@@ -82,6 +119,9 @@ const WaitingList = () => {
     const handleChipClick = (itemId, userId) => {
         const isEnabled = selectedChips[itemId] && selectedChips[itemId][userId];
 
+        if (!isAdmin) {
+            return;
+        }
         if (isEnabled) {
             // If enabled, remove waiting list record
             handleDeleteWaitingList(userId, itemId);
@@ -110,7 +150,10 @@ const WaitingList = () => {
         );
     };
 
-    //const filteredItemdrops = itemdrops.filter(drop => drop.Raiditem.floorid === raidfloors.id);
+    const handleDeleteItemdrop = async (id) => {
+        await deleteItemdrop(id);
+        fetchRaidItems();
+    };
 
     return (
         <Container>
@@ -155,14 +198,12 @@ const WaitingList = () => {
                                         </ListItemAvatar>
                                         <ListItemText 
                                             primary={item.name} 
-                                            secondary={`Requested by: ${item.requestedBy}`}
                                         />
                                     </ListItem>
                                     <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, paddingLeft: 7 }}>
                                         {users
                                             .filter(user => user.raidmember)
-                                            .map(user => {
-                                                const isDisabled = isUserInWaitingList(item.id, user.id);
+                                            .map(user => {                                                
                                                 return (
                                                     <Chip 
                                                         key={user.id}
@@ -191,6 +232,9 @@ const WaitingList = () => {
                             <TableCell>Item</TableCell>
                             <TableCell>Raider</TableCell>
                             <TableCell>Date Received</TableCell>
+                            {isAdmin && (
+                            <TableCell>Actions</TableCell>
+                            )}
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -211,6 +255,13 @@ const WaitingList = () => {
                                 />
                                 </TableCell>
                                 <TableCell>{new Date(drop.createdAt).toLocaleDateString()}</TableCell>
+                                {isAdmin && (
+                                <TableCell>
+                                    <IconButton color="error" onClick={() => handleDeleteItemdrop(drop.id)}>
+                                        <DeleteIcon />
+                                    </IconButton>
+                                </TableCell>
+                            )}
                             </TableRow>
                         ))}
                     </TableBody>
