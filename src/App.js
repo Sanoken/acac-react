@@ -7,9 +7,11 @@ import ThemeContextProvider from "./context/ThemeContext";
 import Users from "./pages/Users";
 import WaitingList from "./pages/WaitingList";
 import RaidContent from "./pages/RaidContent";
+import AlternateWeapons from "./pages/AlternateWeapons";
 
 import './App.css';
 import { getUsers } from "./services/userService";  // Import the getUsers function
+
 
 function App() {
   const [userInfo, setUserInfo] = useState(() => {
@@ -58,8 +60,6 @@ function App() {
     <ThemeContextProvider>
       <Router> 
         <Header />
-        <br />
-        <br />
         <main>
         <div style={{  width: "100%", height: "auto", overflow: "hidden" }}>
           <img alt="A Clear's A Clear Banner" 
@@ -76,6 +76,7 @@ function App() {
           <Route path="/users" element={<Users />} /> 
           <Route path="/waitinglist" element={<WaitingList />} />
           <Route path="/raid-content" element={<RaidContent />} />
+          <Route path="/alternate-weapons" element={<AlternateWeapons />} />
         </Routes>
         </main>
         <Footer />
