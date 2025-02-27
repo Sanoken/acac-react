@@ -14,14 +14,6 @@ const Header = () => {
         return storedUser ? JSON.parse(storedUser) : null;
     });
 
-    // Function to update the currentUser state from localStorage
-    // const updateCurrentUser = () => {
-    //     const storedUser = localStorage.getItem("currentUser");
-    //     if (storedUser) {
-    //         setCurrentUser(JSON.parse(storedUser));
-    //     }
-    // };
-
     const [isAdmin, setIsAdmin] = useState(false);    
 
     // Monitor localStorage changes for userInfo within the same tab
@@ -120,6 +112,12 @@ const Header = () => {
                     Raid Content
                   </MenuItem>
                 )}
+                  <MenuItem component={Link} to="/alternate-weapons" onClick={handleMenuClose}>
+                    <ListItemIcon>
+                      <PlaylistAddCheck fontSize="small" />
+                    </ListItemIcon>
+                  Alternate Weapons
+                  </MenuItem>
                   <MenuItem component={Link} to="/waitinglist" onClick={handleMenuClose}>
                     <ListItemIcon>
                       <PlaylistAddCheck fontSize="small" />
