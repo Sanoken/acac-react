@@ -52,6 +52,7 @@ const WaitingList = () => {
     useEffect(() => {
         // Initialize selectedChips state for each item
         const initialSelected = {};
+        //console.log(raiditems);
         raiditems.forEach(item => {
             initialSelected[item.id] = {};
             users.forEach(user => {
@@ -62,12 +63,14 @@ const WaitingList = () => {
     }, [raiditems, users]);
 
     useEffect(() => {
-        getItemDrops().then(data => {
-            const filteredDrops = data.filter(drop => drop.Raiditem.floorid === raidfloors[activeTab]?.id);
-            setItemdrops(filteredDrops.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)));
-        });
+        fetchItemDrops();
     }, [activeTab, raidfloors]);
 
+    const fetchItemDrops = async () => {
+        const data = await getItemDrops();
+        const filteredDrops = data.filter(drop => drop.Raiditem.floorid === raidfloors[activeTab]?.id);
+        setItemdrops(filteredDrops.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)));
+    };
     const fetchAdminStatus = async () => {
         const storedUserInfo = localStorage.getItem('userInfo');
         if (storedUserInfo) {
@@ -146,7 +149,7 @@ const WaitingList = () => {
 
     const isUserInWaitingList = (itemId, userId) => {
         return waitinglists.some(waitinglist => 
-            waitinglist.raiditemid === itemId && waitinglist.userid === userId
+            waitinglist.Raiditem.id === itemId && waitinglist.User.id === userId
         );
     };
 
