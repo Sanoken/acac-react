@@ -52,7 +52,6 @@ const WaitingList = () => {
     useEffect(() => {
         // Initialize selectedChips state for each item
         const initialSelected = {};
-        //console.log(raiditems);
         raiditems.forEach(item => {
             initialSelected[item.id] = {};
             users.forEach(user => {

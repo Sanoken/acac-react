@@ -7,15 +7,24 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import keycloak from './keycloak';
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
+const container = document.getElementById('root');
+const root = ReactDOM.createRoot(container);
 
-
-keycloak.init({ onLoad: "login-required", pkceMethod: undefined, checkLoginIframe: false }).then(authenticated => {
+keycloak.init({ 
+  onLoad: "login-required", 
+  pkceMethod: undefined, 
+  checkLoginIframe: false 
+}).then(authenticated => {
   if (!authenticated) {
-      console.log("User not authenticated");
+    console.log("User not authenticated");
   }
+
   root.render(
-  <Provider store={store}><App /></Provider>, document.getElementById("root"));
+    <Provider store={store}>
+      <App />
+    </Provider>
+  );
+
 }).catch(error => {
   console.error("Keycloak initialization failed", error);
 });

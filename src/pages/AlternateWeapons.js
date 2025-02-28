@@ -5,9 +5,11 @@ import { Container, Paper,
          TableHead, TableRow,
          Avatar, Box, Button,
          Select, MenuItem, 
-         Typography, Grid2 
+         Typography, Grid2
+         ,TextField, IconButton
        } from '@mui/material';
-import { getJobs } from '../services/jobService';
+import { Delete } from '@mui/icons-material';
+import { getJobs, deleteJob, createJob } from '../services/jobService';
 import { getUsers } from '../services/userService';
 import { getAlternates, createAlternate, updateAlternate } from '../services/alternatesService';
 
@@ -19,10 +21,11 @@ const AlternateWeapons = () => {
     const [newRaider, setNewRaider] = useState('');
     const [newAlt1, setNewAlt1] = useState('');
     const [newAlt2, setNewAlt2] = useState('');
+    const [newJobName, setNewJobName] = useState('');
+    const [newJobImage, setNewJobImage] = useState('');
     const [loggedInUserName, setLoggedInUserName] = useState('');
     
     const [isAdmin, setIsAdmin] = useState(false);    
-    const [loading, setLoading] = useState(true);
 
     const fetchAdminStatus = async () => {
         const storedUserInfo = localStorage.getItem('userInfo');
@@ -52,12 +55,12 @@ const AlternateWeapons = () => {
     };
     const fetchJobs = async () => {
         const jobs = await getJobs();
-        setJobs(jobs);
+        setJobs(jobs.sort((a, b) => a.name.localeCompare(b.name)));
     };
 
     const fetchUsers = async () => {
         const users = await getUsers();
-        setUsers(users.filter(user => user.raidmember));
+        setUsers(users.filter(user => user.raidmember).sort((a, b) => a.name.localeCompare(b.name)));
     };
 
     const fetchAlternates = async () => {
@@ -67,15 +70,14 @@ const AlternateWeapons = () => {
 
     useEffect(() => {
         const fetchData = async () => {
-            setLoading(true);
-            await fetchLoggedInUserName();
             await fetchAdminStatus();
-            await Promise.all([fetchJobs(), fetchUsers()]);
+            await fetchLoggedInUserName();
+            await fetchJobs();
+            await fetchUsers();
             await fetchAlternates();
-            setLoading(false);    
         };
         fetchData();
-    }, []);
+    }, [fetchJobs, fetchUsers, fetchAlternates]);
 
     const handleChange = (event, userId, altNumber, alternateid) => {
         const value = event.target.value;
@@ -134,9 +136,37 @@ const AlternateWeapons = () => {
         fetchAlternates();
     };
 
-    if (loading) {
-        return <Typography variant="h4">Loading...</Typography>;
+    const handleCreateJob = async () => {
+        if (!isAdmin) { 
+            alert('You do not have permission to create jobs.');
+            return;
+        }
+        const jobExists = jobs.some(job => job.name === newJobName);
+        if (jobExists) {
+            alert('This job already exists. Please select a different job name.');
+            return;
+        }
+        if (!newJobName || !newJobImage) {
+            alert('Please enter a Job Name and Job Image URL');
+            return;
+        }
+        await createJob({
+            name: newJobName,
+            jobimage: newJobImage
+        });
+        setNewJobName('');
+        setNewJobImage('');
+        fetchJobs();
     }
+    const handledeleteJob = async (id) => {
+        if (!isAdmin) { 
+            alert('You do not have permission to delete jobs.');
+            return;
+        }
+        await deleteJob(id);
+        fetchJobs();
+    }
+
     return (
         <Container>
             <Typography variant="h4" gutterBottom>
@@ -231,7 +261,8 @@ const AlternateWeapons = () => {
                         </Button>
                     </Grid2>
                 </Grid2>
-            </Paper>)}
+            </Paper>
+        )}
             <TableContainer component={Paper}>
                 <Table>
                     <TableHead>
@@ -349,9 +380,79 @@ const AlternateWeapons = () => {
                         </TableRow>
                     ))}
                 </TableBody>
-
                 </Table>
+
             </TableContainer>
+<br></br>
+
+{isAdmin && (
+
+            <Paper sx={{ padding: 2, marginBottom: 3 }}>
+                <Typography variant="h6" gutterBottom>
+                    Add New Job
+                </Typography>
+                <Grid2 container spacing={2}>
+                    <Grid2 item xs={12} sm={4}>
+                        <TextField 
+                            label="Job Name"  
+                            value={newJobName}
+                            onChange={(e) => setNewJobName(e.target.value)} 
+                        />
+                    </Grid2>
+                    <Grid2 item xs={12} sm={4}>
+                        <TextField 
+                            label="Job Image" 
+                            value={newJobImage}
+                            onChange={(e) => setNewJobImage(e.target.value)}
+                        />
+                    </Grid2>
+                    <Grid2 item xs={12} sm={12}>
+                        <Button 
+                            variant="contained" 
+                            color="primary" 
+                            onClick={handleCreateJob}
+                            disabled={!isAdmin}
+                        >
+                            Save New Job
+                        </Button>
+                    </Grid2>
+                </Grid2>
+            </Paper>
+)}
+            <TableContainer component={Paper}>
+            {isAdmin && (
+                <Table>
+                    <TableHead>
+                        <TableRow>
+                            <TableCell>Job</TableCell>
+                            <TableCell>Action</TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {jobs.map((job) => (
+                            <TableRow key={job.id}>
+                                <TableCell>
+                                    <Box display="flex" alignItems="center">
+                                        <Avatar 
+                                            src={job.jobimage} 
+                                            alt={job.name} 
+                                            sx={{ width: 24, height: 24, marginRight: 1 }}
+                                        />
+                                        {job.name}
+                                    </Box>
+                                </TableCell>
+                                <TableCell>
+                                    <IconButton color="secondary" onClick={() => handledeleteJob(job.id)}>
+                                        <Delete />
+                                    </IconButton>
+                                </TableCell>      
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            )}
+            </TableContainer>
+            
         </Container>
     );
 };
