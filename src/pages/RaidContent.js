@@ -25,27 +25,6 @@ import { Edit, Delete } from '@mui/icons-material';
     const RaidContent = () => {
 
     const navigate = useNavigate();
-    const [isAuthorized, setIsAuthorized] = useState(false);
-
-    useEffect(() => {
-        const storedUserInfo = localStorage.getItem('userInfo');
-        if (storedUserInfo) {
-            const parsedInfo = JSON.parse(storedUserInfo);
-            // Check if user is in nine-admin group
-            try
-            {
-                if (parsedInfo.groups.includes('nine-admin')) {
-                    setIsAuthorized(true);
-                } else {
-                    navigate('/');
-                }
-            } catch (error){return navigate('/');}
-            
-         } else {
-            navigate('/');
-         }
-    }, [navigate]);
-
     const [contentPanels, setContentPanels] = useState([]);
     const [raiditems, setRaiditems] = useState([]);
     const [formData, setFormData] = useState({
@@ -125,7 +104,6 @@ import { Edit, Delete } from '@mui/icons-material';
         fetchRaiditems();
     };
 
-
     // Fetch Raid Floors
     const fetchRaidfloors = useCallback(async () => {
         setLoading(true);
@@ -140,6 +118,24 @@ import { Edit, Delete } from '@mui/icons-material';
         setRaiditems(items.sort((a, b) => a.order - b.order));
     }, []);
 
+
+    useEffect(() => {
+        const storedUserInfo = localStorage.getItem('userInfo');
+        if (storedUserInfo) {
+            const parsedInfo = JSON.parse(storedUserInfo);
+            // Check if user is in nine-admin group
+            try
+            {
+                if (!parsedInfo.groups.includes('nine-admin')) {
+                    navigate('/');
+                }
+            } catch (error){return navigate('/');}
+            
+         } else {
+            navigate('/');
+         }
+    }, [navigate]);
+    
     useEffect(() => {
         fetchRaidfloors();
         fetchRaiditems();

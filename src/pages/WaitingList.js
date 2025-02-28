@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { 
     Box, 
     Tabs, 
@@ -41,35 +41,19 @@ const WaitingList = () => {
     const [updateTrigger, setUpdateTrigger] = useState(false);
     const [isAdmin, setIsAdmin] = useState(false);
 
-    useEffect(() => {
-        fetchUsers();
-        fetchRaidItems();
-        fetchRaidfloors();
-        fetchWaitinglist();
-        fetchAdminStatus();
-    }, [updateTrigger, activeTab, raidfloors]);
+    const isUserInWaitingList = useCallback((itemId, userId) => {
+        return waitinglists.some(waitinglist => 
+            waitinglist.Raiditem.id === itemId && waitinglist.User.id === userId
+        );
+    }, [waitinglists]);
 
-    useEffect(() => {
-        // Initialize selectedChips state for each item
-        const initialSelected = {};
-        raiditems.forEach(item => {
-            initialSelected[item.id] = {};
-            users.forEach(user => {
-                initialSelected[item.id][user.id] = isUserInWaitingList(item.id, user.id);
-            });
-        });
-        setSelectedChips(initialSelected);
-    }, [raiditems, users]);
-
-    useEffect(() => {
-        fetchItemDrops();
-    }, [activeTab, raidfloors]);
-
-    const fetchItemDrops = async () => {
+    const fetchItemDrops = useCallback(async () => {
         const data = await getItemDrops();
         const filteredDrops = data.filter(drop => drop.Raiditem.floorid === raidfloors[activeTab]?.id);
         setItemdrops(filteredDrops.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)));
-    };
+    }, [activeTab, raidfloors]);
+    
+        
     const fetchAdminStatus = async () => {
         const storedUserInfo = localStorage.getItem('userInfo');
         if (storedUserInfo) {
@@ -146,16 +130,34 @@ const WaitingList = () => {
         setUpdateTrigger(prev => !prev);
     };
 
-    const isUserInWaitingList = (itemId, userId) => {
-        return waitinglists.some(waitinglist => 
-            waitinglist.Raiditem.id === itemId && waitinglist.User.id === userId
-        );
-    };
-
     const handleDeleteItemdrop = async (id) => {
         await deleteItemdrop(id);
         fetchRaidItems();
     };
+
+    useEffect(() => {
+        fetchUsers();
+        fetchRaidItems();
+        fetchRaidfloors();
+        fetchWaitinglist();
+        fetchAdminStatus();
+    }, [updateTrigger, activeTab, raidfloors]);
+
+    useEffect(() => {
+        // Initialize selectedChips state for each item
+        const initialSelected = {};
+        raiditems.forEach(item => {
+            initialSelected[item.id] = {};
+            users.forEach(user => {
+                initialSelected[item.id][user.id] = isUserInWaitingList(item.id, user.id);
+            });
+        });
+        setSelectedChips(initialSelected);
+    }, [raiditems, users, isUserInWaitingList]);
+
+    useEffect(() => {
+        fetchItemDrops();
+    }, [activeTab, raidfloors, fetchItemDrops]);
 
     return (
         <Container>

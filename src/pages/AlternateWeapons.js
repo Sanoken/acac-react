@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Container, Paper, 
          Table, TableBody, 
          TableCell, TableContainer, 
@@ -14,17 +14,16 @@ import { getUsers } from '../services/userService';
 import { getAlternates, createAlternate, updateAlternate } from '../services/alternatesService';
 
 const AlternateWeapons = () => {
+
     const [jobs, setJobs] = useState([]);  
     const [users, setUsers] = useState([]);
     const [alternates, setAlternates] = useState([]);
-
     const [newRaider, setNewRaider] = useState('');
     const [newAlt1, setNewAlt1] = useState('');
     const [newAlt2, setNewAlt2] = useState('');
     const [newJobName, setNewJobName] = useState('');
     const [newJobImage, setNewJobImage] = useState('');
     const [loggedInUserName, setLoggedInUserName] = useState('');
-    
     const [isAdmin, setIsAdmin] = useState(false);    
 
     const fetchAdminStatus = async () => {
@@ -44,7 +43,6 @@ const AlternateWeapons = () => {
             setIsAdmin(false);
         }
     };
-
     const fetchLoggedInUserName = async () => {
         const storedUserInfo = localStorage.getItem('currentUser');
         if (storedUserInfo) {
@@ -53,45 +51,40 @@ const AlternateWeapons = () => {
         }
         
     };
-    const fetchJobs = async () => {
+    const fetchJobs = useCallback(async () => {
         const jobs = await getJobs();
         setJobs(jobs.sort((a, b) => a.name.localeCompare(b.name)));
-    };
-
-    const fetchUsers = async () => {
-        const users = await getUsers();
-        setUsers(users.filter(user => user.raidmember).sort((a, b) => a.name.localeCompare(b.name)));
-    };
-
-    const fetchAlternates = async () => {
-        const alternates = await getAlternates();
-        setAlternates(alternates);
-    };
-
-    useEffect(() => {
-        const fetchData = async () => {
-            await fetchAdminStatus();
-            await fetchLoggedInUserName();
-            await fetchJobs();
-            await fetchUsers();
-            await fetchAlternates();
-        };
-        fetchData();
-    }, [fetchJobs, fetchUsers, fetchAlternates]);
-
-    const handleChange = (event, userId, altNumber, alternateid) => {
-        const value = event.target.value;
-        handleSave(alternateid, altNumber, value);
-    };
-
+    }, []);
+    const fetchUsers = useCallback(async () => {
+        const _users = await getUsers();
+        setUsers(
+            _users
+                .filter(user => user.raidmember)
+                .sort((a, b) => a.name.localeCompare(b.name))
+        );
+    }, []);
     const getUserImage = (userid) => {
         const user = users.find(user => user.id === userid);
         return user ? user.lodestoneimage : '';
     }
-    const getUserName = (userid) => {
+    const getUserName = useCallback((userid) => {
         const user = users.find(user => user.id === userid);  
         return user ? user.name : '';
-    }
+    }, [users]);
+    
+    const fetchAlternates = useCallback(async () => {
+        const alternates = await getAlternates();
+        const sortedAlternates = alternates.sort((a, b) => {
+            const nameA = getUserName(a.userid).toLowerCase();
+            const nameB = getUserName(b.userid).toLowerCase();
+            return nameA.localeCompare(nameB);
+        });
+        setAlternates(sortedAlternates);
+    }, [getUserName]);
+    const handleChange = (event, userId, altNumber, alternateid) => {
+        const value = event.target.value;
+        handleSave(alternateid, altNumber, value);
+    };
 
     const handleSave = async (alternateid, alt, value) => {
         if (alt === 'alt1') { 
@@ -101,7 +94,6 @@ const AlternateWeapons = () => {
         }
         fetchAlternates();
     };
-
     const handleCreate = async () => {
         if (!isAdmin) {
             alert('You do not have permission to create alternates.');
@@ -135,7 +127,6 @@ const AlternateWeapons = () => {
         setNewAlt2('');
         fetchAlternates();
     };
-
     const handleCreateJob = async () => {
         if (!isAdmin) { 
             alert('You do not have permission to create jobs.');
@@ -166,6 +157,17 @@ const AlternateWeapons = () => {
         await deleteJob(id);
         fetchJobs();
     }
+
+    useEffect(() => {
+        const fetchData = async () => {
+            await fetchAdminStatus();
+            await fetchLoggedInUserName();
+            await fetchJobs();
+            await fetchUsers();
+            await fetchAlternates();
+        };
+        fetchData();
+    }, [fetchJobs, fetchUsers, fetchAlternates]);
 
     return (
         <Container>

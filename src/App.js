@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import keycloak from "./keycloak";
 import Header from "./components/header";
@@ -14,11 +14,11 @@ import { getUsers } from "./services/userService";  // Import the getUsers funct
 
 
 function App() {
-  const [userInfo, setUserInfo] = useState(() => {
-    // Retrieve user info from localStorage on initial load
-    const storedUserInfo = localStorage.getItem("userInfo");
-    return storedUserInfo ? JSON.parse(storedUserInfo) : null;
-  });
+  // const [userInfo, setUserInfo] = useState(() => {
+  //   // Retrieve user info from localStorage on initial load
+  //   const storedUserInfo = localStorage.getItem("userInfo");
+  //   return storedUserInfo ? JSON.parse(storedUserInfo) : null;
+  // });
 
   useEffect(() => {
     if (keycloak.authenticated) {
@@ -28,7 +28,7 @@ function App() {
       
       keycloak.loadUserInfo()
         .then(info => {
-          setUserInfo(info);
+          //setUserInfo(info);
           // Store user info in localStorage
           localStorage.setItem("userInfo", JSON.stringify(info));
 
