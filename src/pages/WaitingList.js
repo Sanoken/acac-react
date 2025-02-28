@@ -46,30 +46,6 @@ const WaitingList = () => {
             waitinglist.Raiditem.id === itemId && waitinglist.User.id === userId
         );
     }, [waitinglists]);
-    
-    useEffect(() => {
-        fetchUsers();
-        fetchRaidItems();
-        fetchRaidfloors();
-        fetchWaitinglist();
-        fetchAdminStatus();
-    }, [updateTrigger, activeTab, raidfloors]);
-
-    useEffect(() => {
-        // Initialize selectedChips state for each item
-        const initialSelected = {};
-        raiditems.forEach(item => {
-            initialSelected[item.id] = {};
-            users.forEach(user => {
-                initialSelected[item.id][user.id] = isUserInWaitingList(item.id, user.id);
-            });
-        });
-        setSelectedChips(initialSelected);
-    }, [raiditems, users, isUserInWaitingList]);
-
-    useEffect(() => {
-        fetchItemDrops();
-    }, [activeTab, raidfloors]);
 
     const fetchItemDrops = useCallback(async () => {
         const data = await getItemDrops();
@@ -77,6 +53,7 @@ const WaitingList = () => {
         setItemdrops(filteredDrops.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)));
     }, [activeTab, raidfloors]);
     
+        
     const fetchAdminStatus = async () => {
         const storedUserInfo = localStorage.getItem('userInfo');
         if (storedUserInfo) {
@@ -157,6 +134,30 @@ const WaitingList = () => {
         await deleteItemdrop(id);
         fetchRaidItems();
     };
+
+    useEffect(() => {
+        fetchUsers();
+        fetchRaidItems();
+        fetchRaidfloors();
+        fetchWaitinglist();
+        fetchAdminStatus();
+    }, [updateTrigger, activeTab, raidfloors]);
+
+    useEffect(() => {
+        // Initialize selectedChips state for each item
+        const initialSelected = {};
+        raiditems.forEach(item => {
+            initialSelected[item.id] = {};
+            users.forEach(user => {
+                initialSelected[item.id][user.id] = isUserInWaitingList(item.id, user.id);
+            });
+        });
+        setSelectedChips(initialSelected);
+    }, [raiditems, users, isUserInWaitingList]);
+
+    useEffect(() => {
+        fetchItemDrops();
+    }, [activeTab, raidfloors, fetchItemDrops]);
 
     return (
         <Container>
