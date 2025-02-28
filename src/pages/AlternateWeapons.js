@@ -59,13 +59,22 @@ const AlternateWeapons = () => {
     };
 
     const fetchUsers = async () => {
-        const users = await getUsers();
-        setUsers(users.filter(user => user.raidmember).sort((a, b) => a.name.localeCompare(b.name)));
+        const _users = await getUsers();
+        setUsers(
+            _users
+                .filter(user => user.raidmember)
+                .sort((a, b) => a.name.localeCompare(b.name))
+        );
     };
 
     const fetchAlternates = async () => {
         const alternates = await getAlternates();
-        setAlternates(alternates);
+        const sortedAlternates = alternates.sort((a, b) => {
+            const nameA = getUserName(a.userid).toLowerCase();
+            const nameB = getUserName(b.userid).toLowerCase();
+            return nameA.localeCompare(nameB);
+        });
+        setAlternates(sortedAlternates);
     };
 
     useEffect(() => {

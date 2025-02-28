@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { 
     Box, 
     Tabs, 
@@ -41,6 +41,12 @@ const WaitingList = () => {
     const [updateTrigger, setUpdateTrigger] = useState(false);
     const [isAdmin, setIsAdmin] = useState(false);
 
+    const isUserInWaitingList = useCallback((itemId, userId) => {
+        return waitinglists.some(waitinglist => 
+            waitinglist.Raiditem.id === itemId && waitinglist.User.id === userId
+        );
+    }, [waitinglists]);
+    
     useEffect(() => {
         fetchUsers();
         fetchRaidItems();
@@ -59,17 +65,18 @@ const WaitingList = () => {
             });
         });
         setSelectedChips(initialSelected);
-    }, [raiditems, users]);
+    }, [raiditems, users, isUserInWaitingList]);
 
     useEffect(() => {
         fetchItemDrops();
     }, [activeTab, raidfloors]);
 
-    const fetchItemDrops = async () => {
+    const fetchItemDrops = useCallback(async () => {
         const data = await getItemDrops();
         const filteredDrops = data.filter(drop => drop.Raiditem.floorid === raidfloors[activeTab]?.id);
         setItemdrops(filteredDrops.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)));
-    };
+    }, [activeTab, raidfloors]);
+    
     const fetchAdminStatus = async () => {
         const storedUserInfo = localStorage.getItem('userInfo');
         if (storedUserInfo) {
@@ -144,12 +151,6 @@ const WaitingList = () => {
             }
         }));
         setUpdateTrigger(prev => !prev);
-    };
-
-    const isUserInWaitingList = (itemId, userId) => {
-        return waitinglists.some(waitinglist => 
-            waitinglist.Raiditem.id === itemId && waitinglist.User.id === userId
-        );
     };
 
     const handleDeleteItemdrop = async (id) => {
