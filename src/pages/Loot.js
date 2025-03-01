@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useContext } from 'react';
+import { ThemeContext } from "../context/ThemeContext";
 import { getItemDrops } from '../services/itemdropService';
 import { getRaidfloors } from '../services/raidfloorService';
 import { getUsers } from '../services/userService';
@@ -22,6 +23,8 @@ import {
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 
 const Loot = () => {
+    const { darkMode } = useContext(ThemeContext);
+
     const [itemdrops, setItemdrops] = useState([]);
     const [raidfloors, setRaidfloors] = useState([]);
     const [activeTab, setActiveTab] = useState(0);
@@ -89,11 +92,24 @@ const Loot = () => {
             <Box sx={{ width: '100%', height: 300, marginBottom: 4 }}>
                 <ResponsiveContainer>
                     <BarChart data={getBarChartData()}>
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="name" />
-                        <YAxis allowDecimals={false} />
-                        <Tooltip />
-                        <Bar dataKey="count" fill="#8884d8" barSize={30} radius={[10, 10, 0, 0]} />
+                        <defs>
+                            <linearGradient id="colorUv" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="5%" stopColor={darkMode ? "#BB86FC" : "#8884d8"} stopOpacity={0.8} />
+                                <stop offset="95%" stopColor={darkMode ? "#03DAC6" : "#82ca9d"} stopOpacity={0.8} />
+                            </linearGradient>
+                        </defs>
+                        <CartesianGrid strokeDasharray="3 3" stroke={darkMode ? "#444" : "#ccc"} />
+                        <XAxis dataKey="name" stroke={darkMode ? "#fff" : "#000"} />
+                        <YAxis allowDecimals={false} stroke={darkMode ? "#fff" : "#000"} />
+                        <Tooltip 
+                            contentStyle={{ backgroundColor: darkMode ? "#333" : "#fff", color: darkMode ? "#fff" : "#000" }} 
+                        />
+                        <Bar 
+                            dataKey="count" 
+                            fill="url(#colorUv)" 
+                            barSize={30} 
+                            radius={[10, 10, 0, 0]} // Rounded corners
+                        />
                     </BarChart>
                 </ResponsiveContainer>
             </Box>
