@@ -19,6 +19,7 @@ import {
     Paper,
     TablePagination
 } from '@mui/material';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 
 const Loot = () => {
     const [itemdrops, setItemdrops] = useState([]);
@@ -42,8 +43,12 @@ const Loot = () => {
 
     const fetchItemDrops = useCallback(async () => {
         const data = await getItemDrops();
-        const filteredDrops = data.filter(drop => drop.Raiditem.floorid === raidfloors[activeTab]?.id);
-        setItemdrops(filteredDrops.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)));
+        if (activeTab === 0) {
+            setItemdrops(data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)));
+        } else {
+            const filteredDrops = data.filter(drop => drop.Raiditem.floorid === raidfloors[activeTab - 1]?.id);
+            setItemdrops(filteredDrops.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)));
+        }
     }, [activeTab, raidfloors]);
         
     const handleTabChange = (event, newValue) => {
@@ -66,10 +71,37 @@ const Loot = () => {
         fetchItemDrops();
     }, [activeTab, fetchItemDrops]);
 
+    // Prepare data for the bar chart
+    const getBarChartData = () => {
+        const countMap = {};
+
+        itemdrops.forEach(drop => {
+            const userName = users.find(user => user.id === drop.userid)?.name || 'Unknown';
+            countMap[userName] = (countMap[userName] || 0) + 1;
+        });
+
+        return Object.entries(countMap).map(([name, count]) => ({ name, count }));
+    };
+
     return (
         <Container>
+            {/* Bar Chart */}
+            <Box sx={{ width: '100%', height: 300, marginBottom: 4 }}>
+                <ResponsiveContainer>
+                    <BarChart data={getBarChartData()}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="name" />
+                        <YAxis allowDecimals={false} />
+                        <Tooltip />
+                        <Bar dataKey="count" fill="#8884d8" barSize={30} radius={[10, 10, 0, 0]} />
+                    </BarChart>
+                </ResponsiveContainer>
+            </Box>
+
+            {/* Tabs */}
             <Box sx={{ borderBottom: 1, borderColor: 'divider', marginBottom: 2 }}>
                 <Tabs value={activeTab} onChange={handleTabChange}>
+                    <Tab label="All Items" />
                     {raidfloors.map((raidfloor) => (
                         <Tab 
                             key={raidfloor.id} 
@@ -88,6 +120,7 @@ const Loot = () => {
                 </Tabs>
             </Box>
 
+            {/* Table */}
             <TableContainer component={Paper} style={{ marginTop: 20 }}>
                 <Table>
                     <TableHead>
