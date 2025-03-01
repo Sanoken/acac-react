@@ -19,7 +19,8 @@ import {
     TableContainer, 
     TableHead, 
     TableRow, 
-    Paper
+    Paper,
+    TablePagination
 } from '@mui/material';
 import { Delete as DeleteIcon } from "@mui/icons-material";
 import { getUsers } from '../services/userService';
@@ -40,6 +41,9 @@ const WaitingList = () => {
     const [itemdrops, setItemdrops] = useState([]);
     const [updateTrigger, setUpdateTrigger] = useState(false);
     const [isAdmin, setIsAdmin] = useState(false);
+    // Pagination state
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
 
     const isUserInWaitingList = useCallback((itemId, userId) => {
         return waitinglists.some(waitinglist => 
@@ -135,6 +139,14 @@ const WaitingList = () => {
         fetchRaidItems();
     };
 
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage);
+    };
+
+    const handleChangeRowsPerPage = (event) => {
+        setRowsPerPage(parseInt(event.target.value, 10));
+        setPage(0);
+    };
     useEffect(() => {
         fetchUsers();
         fetchRaidItems();
@@ -270,6 +282,15 @@ const WaitingList = () => {
                         ))}
                     </TableBody>
                 </Table>
+                <TablePagination
+                    component="div"
+                    count={itemdrops.length}
+                    page={page}
+                    onPageChange={handleChangePage}
+                    rowsPerPage={rowsPerPage}
+                    onRowsPerPageChange={handleChangeRowsPerPage}
+                    rowsPerPageOptions={[5, 10, 25]}
+                />
             </TableContainer>
         </Container>
     );
