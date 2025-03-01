@@ -444,7 +444,7 @@ const AlternateWeapons = () => {
                                     </Box>
                                 </TableCell>
                                 <TableCell>
-                                    <IconButton color="secondary" onClick={() => handledeleteJob(job.id)}>
+                                    <IconButton color="error" onClick={() => handledeleteJob(job.id)}>
                                         <Delete />
                                     </IconButton>
                                 </TableCell>      

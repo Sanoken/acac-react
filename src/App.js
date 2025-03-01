@@ -8,6 +8,7 @@ import Users from "./pages/Users";
 import WaitingList from "./pages/WaitingList";
 import RaidContent from "./pages/RaidContent";
 import AlternateWeapons from "./pages/AlternateWeapons";
+import Loot from "./pages/Loot";
 
 import './App.css';
 import { getUsers } from "./services/userService";  // Import the getUsers function
@@ -77,6 +78,7 @@ function App() {
           <Route path="/waitinglist" element={<WaitingList />} />
           <Route path="/raid-content" element={<RaidContent />} />
           <Route path="/alternate-weapons" element={<AlternateWeapons />} />
+          <Route path="/loot" element={<Loot />} /> 
         </Routes>
         </main>
         <Footer />
