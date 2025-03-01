@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useContext } from 'react';
+import { ThemeContext } from "../context/ThemeContext";
 import { getItemDrops } from '../services/itemdropService';
 import { getRaidfloors } from '../services/raidfloorService';
 import { getUsers } from '../services/userService';
@@ -19,8 +20,11 @@ import {
     Paper,
     TablePagination
 } from '@mui/material';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 
 const Loot = () => {
+    const { darkMode } = useContext(ThemeContext);
+
     const [itemdrops, setItemdrops] = useState([]);
     const [raidfloors, setRaidfloors] = useState([]);
     const [activeTab, setActiveTab] = useState(0);
@@ -42,8 +46,12 @@ const Loot = () => {
 
     const fetchItemDrops = useCallback(async () => {
         const data = await getItemDrops();
-        const filteredDrops = data.filter(drop => drop.Raiditem.floorid === raidfloors[activeTab]?.id);
-        setItemdrops(filteredDrops.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)));
+        if (activeTab === 0) {
+            setItemdrops(data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)));
+        } else {
+            const filteredDrops = data.filter(drop => drop.Raiditem.floorid === raidfloors[activeTab - 1]?.id);
+            setItemdrops(filteredDrops.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)));
+        }
     }, [activeTab, raidfloors]);
         
     const handleTabChange = (event, newValue) => {
@@ -66,10 +74,50 @@ const Loot = () => {
         fetchItemDrops();
     }, [activeTab, fetchItemDrops]);
 
+    // Prepare data for the bar chart
+    const getBarChartData = () => {
+        const countMap = {};
+
+        itemdrops.forEach(drop => {
+            const userName = users.find(user => user.id === drop.userid)?.name || 'Unknown';
+            countMap[userName] = (countMap[userName] || 0) + 1;
+        });
+
+        return Object.entries(countMap).map(([name, count]) => ({ name, count }));
+    };
+
     return (
         <Container>
+            {/* Bar Chart */}
+            <Box sx={{ width: '100%', height: 300, marginBottom: 4 }}>
+                <ResponsiveContainer>
+                    <BarChart data={getBarChartData()}>
+                        <defs>
+                            <linearGradient id="colorUv" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="5%" stopColor={darkMode ? "#BB86FC" : "#8884d8"} stopOpacity={0.8} />
+                                <stop offset="95%" stopColor={darkMode ? "#03DAC6" : "#82ca9d"} stopOpacity={0.8} />
+                            </linearGradient>
+                        </defs>
+                        <CartesianGrid strokeDasharray="3 3" stroke={darkMode ? "#444" : "#ccc"} />
+                        <XAxis dataKey="name" stroke={darkMode ? "#fff" : "#000"} />
+                        <YAxis allowDecimals={false} stroke={darkMode ? "#fff" : "#000"} />
+                        <Tooltip 
+                            contentStyle={{ backgroundColor: darkMode ? "#333" : "#fff", color: darkMode ? "#fff" : "#000" }} 
+                        />
+                        <Bar 
+                            dataKey="count" 
+                            fill="url(#colorUv)" 
+                            barSize={30} 
+                            radius={[10, 10, 0, 0]} // Rounded corners
+                        />
+                    </BarChart>
+                </ResponsiveContainer>
+            </Box>
+
+            {/* Tabs */}
             <Box sx={{ borderBottom: 1, borderColor: 'divider', marginBottom: 2 }}>
                 <Tabs value={activeTab} onChange={handleTabChange}>
+                    <Tab label="All Items" />
                     {raidfloors.map((raidfloor) => (
                         <Tab 
                             key={raidfloor.id} 
@@ -88,6 +136,7 @@ const Loot = () => {
                 </Tabs>
             </Box>
 
+            {/* Table */}
             <TableContainer component={Paper} style={{ marginTop: 20 }}>
                 <Table>
                     <TableHead>

@@ -8,13 +8,13 @@ import {
   Avatar,
   Box,
   MenuItem,
-  ListItemIcon,
+  ListItemIcon
 } from "@mui/material";
 import {
   DarkMode as DarkModeIcon,
   LightMode as LightModeIcon,
-  People,Bolt,
-  Logout,
+  People, Bolt,
+  Logout, AttachMoney,
   PlaylistAddCheck,
   SportsMartialArts,
 } from "@mui/icons-material";
@@ -87,6 +87,12 @@ const Header = () => {
               User Management
             </MenuItem>
           )}
+          <MenuItem component={Link} to="/Loot">
+            <ListItemIcon>
+              <AttachMoney fontSize="small" />
+            </ListItemIcon>
+            Loot
+          </MenuItem>
           {isAdmin && (
             <MenuItem component={Link} to="/raid-content">
               <ListItemIcon>
