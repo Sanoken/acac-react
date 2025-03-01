@@ -1,0 +1,4 @@
+{
+    "appService.defaultWebAppToDeploy": "/subscriptions/9e34d96a-5867-4ae0-a923-2837c22a7b8c/resourceGroups/Dev/providers/Microsoft.Web/sites/ACAC",
+    "appService.deploySubpath": "."
+}
