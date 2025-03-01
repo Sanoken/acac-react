@@ -254,7 +254,9 @@ const WaitingList = () => {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {itemdrops.map((drop, index) => (
+                        {itemdrops
+                            .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                            .map((drop, index) => (
                             <TableRow key={index}>
                                 <TableCell>
                                 <Chip 
