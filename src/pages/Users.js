@@ -38,7 +38,7 @@ const Users = () => {
 
     const fetchUsers = async () => {
         const data = await getUsers();
-        setUsers(data);
+        setUsers(data.sort((a, b) => a.name.localeCompare(b.name)));
     };
 
     const handleOpen = (user = null) => {

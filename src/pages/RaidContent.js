@@ -206,7 +206,7 @@ import { Edit, Delete } from '@mui/icons-material';
                                 <IconButton color="primary" onClick={() => handleEdit(panel)}>
                                     <Edit />
                                 </IconButton>
-                                <IconButton color="secondary" onClick={() => handleConfirmDelete(panel.id)}>
+                                <IconButton color="error" onClick={() => handleConfirmDelete(panel.id)}>
                                     <Delete />
                                 </IconButton>
                             </Box>
@@ -219,6 +219,7 @@ import { Edit, Delete } from '@mui/icons-material';
                                             <TableCell>Is Weapon</TableCell>
                                             <TableCell>Has List</TableCell>
                                             <TableCell>Order</TableCell>
+                                            <TableCell>Actions</TableCell>
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
@@ -237,7 +238,7 @@ import { Edit, Delete } from '@mui/icons-material';
                                                         <IconButton color="primary" onClick={() => handleEditItem(item)}>
                                                             <Edit />
                                                         </IconButton>
-                                                        <IconButton color="secondary" onClick={() => handleDeleteItem(item.id)}>
+                                                        <IconButton color="error" onClick={() => handleDeleteItem(item.id)}>
                                                             <Delete />
                                                         </IconButton>
                                                     </TableCell>                                                    
@@ -335,7 +336,7 @@ import { Edit, Delete } from '@mui/icons-material';
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleCancelDelete}>Cancel</Button>
-                    <Button onClick={handleDelete} color="secondary" variant="contained">Delete</Button>
+                    <Button onClick={handleDelete} color="error" variant="contained">Delete</Button>
                 </DialogActions>
             </Dialog>
         </Box>
