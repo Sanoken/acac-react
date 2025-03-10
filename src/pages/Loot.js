@@ -83,7 +83,9 @@ const Loot = () => {
             countMap[userName] = (countMap[userName] || 0) + 1;
         });
 
-        return Object.entries(countMap).map(([name, count]) => ({ name, count }));
+        return Object.entries(countMap)
+            .map(([name, count]) => ({ name, count }))
+            .sort((a, b) => a.name.localeCompare(b.name));
     };
 
     return (
