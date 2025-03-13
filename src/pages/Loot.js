@@ -46,6 +46,7 @@ const Loot = () => {
 
     const fetchItemDrops = useCallback(async () => {
         const data = await getItemDrops();
+        //data.filter(drop => drop.raidmember == true)
         if (activeTab === 0) {
             setItemdrops(data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)));
         } else {
@@ -79,7 +80,7 @@ const Loot = () => {
         const countMap = {};
 
         itemdrops.forEach(drop => {
-            const userName = users.find(user => user.id === drop.userid)?.name || 'Unknown';
+            const userName = users.find(user => user.id === drop.userid)?.name || '[Others]';
             countMap[userName] = (countMap[userName] || 0) + 1;
         });
 
