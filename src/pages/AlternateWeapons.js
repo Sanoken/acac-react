@@ -74,7 +74,7 @@ const AlternateWeapons = () => {
     
     const fetchAlternates = useCallback(async () => {
         const alternates = await getAlternates();
-        const sortedAlternates = alternates.sort((a, b) => {
+        const sortedAlternates = alternates.filter(alternate => users.some(user => user.id ===alternate.userid && user.raidmember === true)).sort((a, b) => {
             const nameA = getUserName(a.userid).toLowerCase();
             const nameB = getUserName(b.userid).toLowerCase();
             return nameA.localeCompare(nameB);
