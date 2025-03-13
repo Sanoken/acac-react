@@ -79,7 +79,7 @@ const Loot = () => {
         const countMap = {};
 
         itemdrops.forEach(drop => {
-            const userName = users.find(user => user.id === drop.userid)?.name || 'Unknown';
+            const userName = users.find(user => user.id === drop.userid)?.name || '[Others]';
             countMap[userName] = (countMap[userName] || 0) + 1;
         });
 
