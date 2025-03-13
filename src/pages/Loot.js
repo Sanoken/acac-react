@@ -46,7 +46,6 @@ const Loot = () => {
 
     const fetchItemDrops = useCallback(async () => {
         const data = await getItemDrops();
-        //data.filter(drop => drop.raidmember == true)
         if (activeTab === 0) {
             setItemdrops(data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)));
         } else {
