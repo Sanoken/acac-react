@@ -1,4 +1,39 @@
+import axios from "axios";
+import { getUser } from "../services/userService"; 
+import { getRaiditem } from '../services/raiditemService';
+import { getRaidfloor } from '../services/raidfloorService';
 const API_URL = process.env.REACT_APP_ACAC_API_URL + "/itemdrops";
+const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1364057014803763250/RCYVi6uQalwwUILBC9ECtEhseSRKGDej-_36Jo8AM1pSCv2VM6KHTgLB5WwFMlc16yba";
+
+async function postToDiscord(message) {
+
+  try {
+
+    const varuser = await getUser(message.userid);
+    const varitem = await getRaiditem(message.itemid);
+    const varfloor = await getRaidfloor(varitem.floorid);
+
+    //console.log("Item:", varitem);
+   
+    if (typeof axios.post !== "function") {
+      console.error("Axios is corrupted or not a function:", axios);
+      return
+    }
+
+    if (!DISCORD_WEBHOOK_URL) {
+      console.error("Discord Webhook URL is not defined");
+      return;
+    }
+
+    await axios.post(DISCORD_WEBHOOK_URL, {
+      content: ">>> Duty: " + varfloor.name + "\r\nRaider: " + varuser.name + "\r\nItem: " + varitem.name + "\r\nDate: " + new Date().toLocaleDateString(),
+    });
+    //console.log("Message posted to Discord");
+  } catch (error) {
+    console.error("Failed to post to Discord:", error.response?.data || error.message);
+  }
+}
+
 
 // Fetch all item drops
 export const getItemDrops = async () => {
@@ -32,6 +67,10 @@ export const createItemdrop = async (itemData) => {
       },
       body: JSON.stringify(itemData),
     });
+    try {
+      await postToDiscord(itemData);
+    } catch (discorderror) { console.error("Error posting to discord:", discorderror); }
+    
     return await response.json();
   } catch (error) {
     console.error("Error creating item drop:", error);
